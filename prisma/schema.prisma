@@ -2,8 +2,8 @@
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL") // pooling (for app)
-  directUrl = env("DIRECT_URL") // direct url (for migration)
+  url       = env("DATABASE_URL")  // pooling (for app)
+  directUrl = env("DIRECT_URL")    // direct url (for migration)
 }
 
 generator client {
@@ -17,22 +17,29 @@ generator client {
  */
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  handle    String   @unique
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  id        String   @id     @default(uuid()) @db.Uuid
+  token     String   @unique @default(uuid()) @db.Uuid  // Cookieに入れるユーザー識別用のトークン
+  username  String?  @unique                            // いわゆるユーザーID
+  handle    String?                                     // 表示名
+  homeId    String?  @unique                  @db.Uuid  // UserにつきHomeチャンネルは一つ
+  createdAt DateTime         @default(now())  @db.Timestamptz(6)
 
-  // Relations（参照される側なのでシンプル）
-  channels Channel[]
-  logs     Log[]
-  sessions Session[]
+  // Relations
+  home      Channel? @relation("UserHome", fields: [homeId], references: [id])
+  channels  Channel[]
+  logs      Log[]
+  sessions  Session[]
 
+  // 名前変更
   @@map("users")
 }
 
 model Channel {
   id        String   @id @default(uuid()) @db.Uuid
+  slug      String?  @unique @default(uuid())  // URLにパースするslug
   userId    String   @db.Uuid
   name      String
+  isHome    Boolean  @default(false)  // Home(特別channel)か否か
   details   String?  @db.Text
   parentId  String?  @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamptz(6)
@@ -48,14 +55,20 @@ model Channel {
   // @@unique([userId, parentId, name])
   // 移動したときにめんどくさそうなので一旦同user内でunique制限にする
 
-  @@unique([userId, name]) // = 同user内でnameをunique制限
+  // User.homeの被参照
+  homeUser User?     @relation("UserHome")
+
   // Indexes
+  @@unique([userId, name]) // = 同user内でnameをunique制限
   @@index([parentId])
+
+  // 名前変更
   @@map("channels")
 }
 
 model Log {
   id        String   @id @default(uuid()) @db.Uuid
+  slug      String?  @unique @default(uuid())  // URLにパースするslug
   userId    String   @db.Uuid
   content   String   @db.Text
   channelId String   @db.Uuid
@@ -63,57 +76,64 @@ model Log {
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   // Relations
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel Channel    @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
   // Indexes
   @@index([userId])
   @@index([channelId, createdAt]) // for UI右側パネルでログを時系列表示するクエリの高速化
+
+  // 名前変更
   @@map("logs")
 }
 
 model Session {
   id        String        @id @default(uuid()) @db.Uuid
+  slug      String?       @unique @default(uuid())  // URLにパースするslug
   userId    String        @db.Uuid
-  name      String? // 未入力の場合、macのスクショみたいな初期値にする
-  // 時間被ったらxx-2みたいな(2から始まるのキモいので処理の仕組みを考えなくては)
+  name      String?
   details   String?       @db.Text
   channelId String        @db.Uuid
-  startedAt DateTime?     @db.Timestamptz(6) // 最初のレコードの開始時刻
-  endedAt   DateTime?     @db.Timestamptz(6) // 最後のレコードの終了時刻
-  status    SessionStatus @default(ACTIVE) // 下で定義するenumを使用
+  startedAt DateTime?     @db.Timestamptz(6)   // 最初のレコードの開始時刻
+  endedAt   DateTime?     @db.Timestamptz(6)   // 最後のレコードの終了時刻
+  status    SessionStatus @default(ACTIVE)     // 下で定義するenumを使用
   createdAt DateTime      @default(now()) @db.Timestamptz(6)
   updatedAt DateTime      @updatedAt @db.Timestamptz(6)
 
   // Relations
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  channel   Channel    @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel   Channel       @relation(fields: [channelId], references: [id], onDelete: Cascade)
   intervals Interval[]
-  // for チャンネル内の完了済みセッションを時系列表示するクエリの高速化
-  // statusでフィルタリングしない場合はstatusはいらない
 
   // Indexes
   @@index([userId])
   @@index([channelId, status, startedAt])
+  // for チャンネル内の完了済みセッションを時系列表示するクエリの高速化
+  // statusでフィルタリングしない場合はstatusはいらない
+
+  // 名前変更
   @@map("sessions")
 }
 
 model Interval {
   //  userIdはSession経由で導出可能なため削除した
   id          String    @id @default(uuid()) @db.Uuid
+  slug        String?   @unique @default(uuid())  // URLにパースするslug
   name        String?
   sessionId   String    @db.Uuid
-  startedAt   DateTime? @db.Timestamptz(6) // 開始時刻=タイマーのstart/resumeを押した時刻
-  endedAt     DateTime? @db.Timestamptz(6) // 終了時刻=タイマーのpause/end
-  durationSec Int? // endedAt - startedAt のキャッシュ
+  startedAt   DateTime? @db.Timestamptz(6)     // 開始時刻=タイマーのstart/resumeを押した時刻
+  endedAt     DateTime? @db.Timestamptz(6)     // 終了時刻=タイマーのpause/end
+  durationSec Int?  // endedAt - startedAt のキャッシュ
   createdAt   DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt   DateTime  @updatedAt @db.Timestamptz(6)
 
   // Relations
-  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session     Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   // Indexes
-  @@index([sessionId, startedAt]) // for セッション内の作業記録を開始時刻順で表示するクエリの高速化
+  @@index([sessionId, startedAt])  // for セッション内の作業記録を開始時刻順で表示するクエリの高速化
+
+  // 名前変更
   @@map("intervals")
 }
 
@@ -125,9 +145,9 @@ model Interval {
 
 // タイマーの状態管理をサーバーサイドでやりたいのでDBに入れる
 enum SessionStatus {
-  ACTIVE @map("active") // タイマー動作中
-  PAUSED @map("paused") // 一時停止中
-  ENDED  @map("ended") // 終了
+  ACTIVE @map("active")  // タイマー動作中
+  PAUSED @map("paused")  // 一時停止中
+  ENDED  @map("ended")   // 終了
 }
 
 // Session status flow:

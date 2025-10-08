@@ -1,0 +1,122 @@
+/* styles/layout.module.css */
+
+/* --- Root layout --- */
+.appLayout {
+  display: flex;
+  height: 100vh;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  width: 240px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.sidebarTitle {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.sidebarTitleText {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.sidebarAddBtn {
+  /* background: #e5e7eb; */
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+.sidebarAddBtn:hover {
+  background: #d1d5db;
+}
+
+.channelList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.channelListItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 0.9rem;
+}
+
+.channelListItem:hover {
+  background: #f3f4f6;
+}
+
+.active {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+}
+
+.channelIcon {
+  display: flex;
+  align-items: center;
+}
+
+.channelName {
+
+}
+
+/* --- Main Panel --- */
+.mainPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Header --- */
+.header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 20px;
+}
+
+.headerInner {
+  /* 余白やレイアウトを足したい場合使う */
+}
+
+.headerTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+/* --- Content area --- */
+.contentArea {
+  flex: 1;
+  padding: 16px 20px;
+  overflow-y: auto;
+  background: #f9fafb;
+}
