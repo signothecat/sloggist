@@ -32,6 +32,11 @@ a {
   color: inherit;
 }
 
+/* textarea*/
+textarea {
+  resize: none;
+}
+
 /* Utils */
 .flex {
   display: flex;

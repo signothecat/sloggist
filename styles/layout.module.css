@@ -8,7 +8,8 @@
 
 /* --- Sidebar --- */
 .sidebar {
-  width: 240px;
+  width: 230px;
+  min-width: 230px;
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
   padding: 0 12px 0 12px;
@@ -105,6 +106,7 @@
 
 /* --- Main Panel --- */
 .mainPanel {
+  min-width: 0;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -112,26 +114,112 @@
 
 /* --- Header --- */
 .header {
-  background: #ffffff;
+  background: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
   padding: 12px 20px;
 }
 
 .headerInner {
-  /* 余白やレイアウトを足したい場合使う */
+  display: flex;
+  min-width: 0;
 }
 
 .headerTitle {
+  flex: 1;
+  min-width: 0;
   font-size: 1rem;
   font-weight: 600;
   color: #111827;
   margin: 0;
+  /* overflowの `…` 表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* --- Content area --- */
 .contentArea {
+  min-width: 0;
   flex: 1;
   padding: 16px 20px;
   overflow-y: auto;
   background: #f9fafb;
+}
+
+/* --- Bottom --- */
+.bottom {
+  width: 100%;
+  min-width: 0;
+  background-color: #f9fafb;
+  /* border-top: 1px solid #e5e7eb; */
+}
+
+.bottomContent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 20px 8px 20px;
+}
+
+.inputContainer {
+  display: flex;
+  align-items: flex-end;      /* テキストエリアの下辺とボタンの下辺を揃える */
+  gap: 8px;                   /* テキストエリアとボタンの間隔 */
+  flex: 1;
+  min-width: 0;
+  padding: 8px 8px 8px 16px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 28px;
+}
+
+.inputArea {
+  flex: 1;
+  width: 100%;
+  align-self: center;
+  font-size: 16px;
+  line-height: 1.5rem;
+  vertical-align: middle;
+  outline: none;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  padding: 4px;
+  overflow: hidden;
+}
+
+.sendButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: none;
+  /* border: 1px solid #e5e7eb; */
+  border-radius: 100px;
+  color: #ffffff;
+  background: #0c6995;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.sendButton:hover {
+  background: #d9dadd;
+  /* border-color: #d1d5db; */
+}
+
+.sendButton:disabled {
+  color: #4b4b4b;
+  background: #eeeeee;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.noteWrapper {
+  padding: 0 4px;
+  text-align: right;
+}
+
+.note {
+  font-size: 0.75rem;
+  color: #848484;
 }
