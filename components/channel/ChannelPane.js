@@ -1,17 +1,12 @@
 // components/channel/ChannelPane.js
 import styles from "@/styles/channel.module.css";
-import { useEffect, useState } from "react";
 
-export default function ChannelPane({ channelSlug }) {
-  const [logs, setLogs] = useState([]);
+export default function ChannelPane({ slug, logs = [], loading }) {
+  if (!slug) return <div className={styles.channelPanel}>Select your channel from sidebar!</div>;
 
-  useEffect(() => {
-    if (!channelSlug) return;
+  if (loading) return <div className={styles.channelPanel}>Loading...</div>;
 
-    fetch(`/api/channels/${channelSlug}/logs`, { cache: "no-store" })
-      .then(res => res.json())
-      .then(data => setLogs(data));
-  }, [channelSlug]);
+  if (logs.length === 0) return <div className={styles.channelPanel}>There's no logs yet.</div>;
 
   return (
     <div className={styles.channelPanel}>

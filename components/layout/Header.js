@@ -1,15 +1,11 @@
 // components/layout/Header.js
 import styles from "@/styles/layout.module.css";
-import { useRouter } from "next/router";
 
-export default function Header() {
-  const router = useRouter();
-  const currentSlug = router.query.slug;
-
+export default function Header({ slug }) {
   return (
     <header className={styles.header}>
       <div className={styles.headerInner}>
-        {currentSlug ? <h1 className={styles.headerTitle}>{currentSlug}</h1> : <h1 className={styles.headerTitle}>Welcome 👋</h1>}
+        {slug ? <h1 className={styles.headerTitle}>{slug}</h1> : <h1 className={styles.headerTitle}>Welcome 👋</h1>}
       </div>
     </header>
   );
