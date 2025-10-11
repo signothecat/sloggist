@@ -45,16 +45,22 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <ul className={styles.channelList}>
-        {channels.map(c => (
-          <li key={c.id} onClick={() => handleSelect(c.slug)} className={`${styles.channelListItem} ${c.slug === currentSlug ? styles.active : ""}`}>
-            <div className={styles.channelIcon}>
-              <Hash size={16} strokeWidth={2.5} />
-            </div>
-            <div className={styles.channelName}>{c.name}</div>
-          </li>
-        ))}
-      </ul>
+      <div className={styles.sidebarContent}>
+        <ul className={styles.channelList}>
+          {channels.map(c => (
+            <li
+              key={c.id}
+              onClick={() => handleSelect(c.slug)}
+              className={`${styles.channelListItem} ${c.slug === currentSlug ? styles.active : ""}`}
+            >
+              <div className={styles.channelIcon}>
+                <Hash size={16} strokeWidth={2.5} />
+              </div>
+              <div className={styles.channelName}>{c.name}</div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </aside>
   );
 }

@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.headerInner}>
-        {currentSlug ? <h1 className={styles.headerTitle}>Channel slug: {currentSlug}</h1> : <h1 className={styles.headerTitle}>Welcome 👋</h1>}
+        {currentSlug ? <h1 className={styles.headerTitle}>{currentSlug}</h1> : <h1 className={styles.headerTitle}>Welcome 👋</h1>}
       </div>
     </header>
   );
