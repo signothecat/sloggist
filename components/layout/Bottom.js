@@ -4,7 +4,7 @@ import { SendHorizontal } from "lucide-react";
 import { useRef, useState } from "react";
 
 export default function Bottom({ slug, name, cSlug, onSend }) {
-  const [textValue, setTextValue] = useState("");
+  const [text, setText] = useState("");
   const textareaRef = useRef(null);
 
   const handleInputContainer = () => {
@@ -19,7 +19,7 @@ export default function Bottom({ slug, name, cSlug, onSend }) {
   };
 
   const handleChange = e => {
-    setTextValue(e.target.value);
+    setText(e.target.value);
     resizeTextArea(e);
   };
 
@@ -33,10 +33,9 @@ export default function Bottom({ slug, name, cSlug, onSend }) {
   };
 
   const handleSubmit = () => {
-    const text = textValue.trim();
-    if (!text) return;
-    onSend(text); // 親(Main)に送信処理を任せる
-    setTextValue("");
+    if (!/\S/.test(text)) return;
+    onSend(text);
+    setText("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
@@ -47,26 +46,19 @@ export default function Bottom({ slug, name, cSlug, onSend }) {
       <div className={styles.bottomContent}>
         <div className={styles.inputContainer} onClick={handleInputContainer}>
           <div className={styles.inputField}>
-            <div className={styles.placeholderOverlay}>{!textValue && slug ? `Send log to #${name}` : ""}</div>
+            <div className={styles.placeholderOverlay}>{!text && slug ? `Send log to #${name}` : ""}</div>
             <textarea
               ref={textareaRef}
               className={styles.inputArea}
               // placeholder={slug ? `Send log to ${slug}` : ""}
-              value={textValue}
+              value={text}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               rows={1}
               disabled={!slug}
             />
           </div>
-          <button
-            type="button"
-            className={styles.sendButton}
-            aria-label="Send"
-            onClick={handleSubmit}
-            disabled={!textValue.trim() || !slug}
-            title="Send"
-          >
+          <button type="button" className={styles.sendButton} aria-label="Send" onClick={handleSubmit} disabled={!text.trim() || !slug} title="Send">
             <SendHorizontal size={16} />
           </button>
         </div>

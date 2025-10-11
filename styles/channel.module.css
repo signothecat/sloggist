@@ -5,19 +5,32 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background-color: #ffffff;
+  padding: 2px;  /* スクロールバーと外枠の隙間 */
+}
+
+.logList {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0;
+  /* スクロール関連 */
+  overflow-y: scroll;
+  /* 色 */
+  background-color: #ffffff;
 }
 
 .logContainer {
-  background: #ffffff;
-  padding: 12px 14px;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  padding: 18px 18px;
   line-height: 1.4;
-  transition: background 0.2s;
+  background-color: transparent;
+  /* transition: background 0.2s; */
+}
+.logContainer + .logContainer {          /* 直前(下)にlogContainerを持つlogContainer */
+  border-bottom: 0.5px solid #e6e8eb;  /* 下線 */
 }
 
 .logContainer:hover {
-  background: #f3f4f6;
+  background: #eeeff1;
 }
 
 .displayNone {
@@ -26,6 +39,7 @@
   align-items: center;
   height: 100%;
   width: 100%;
+  background-color: #ffffff;
 }
 
 .systemMessage {

@@ -31,11 +31,13 @@ export default function ChannelPane({ slug, logs = [], loading }) {
 
   return (
     <div className={styles.channelPanel}>
-      {logs.map(log => (
-        <div className={styles.logContainer} key={log.id}>
-          {log.content}
-        </div>
-      ))}
+      <div className={styles.logList}>
+        {logs.map(log => (
+          <div className={styles.logContainer} key={log.id}>
+            {log.content}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

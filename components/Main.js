@@ -68,11 +68,12 @@ export default function Main({ children, slug }) {
 
   // use in Bottom: ログを送信したとき
   const onSend = async text => {
-    if (!slug || !text?.trim()) return;
+    console.log(`${slug}にてonSend発火`);
+    if (!slug || !/\S/.test(text)) return;
     await fetch(`/api/channels/${slug}/logs`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: text.trim() })
+      body: JSON.stringify({ content: text })
     });
     // 再取得
     fetchLogs();

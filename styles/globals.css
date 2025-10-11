@@ -16,16 +16,6 @@ body {
   color: #222;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
 /* Link */
 a {
   text-decoration: none;
@@ -55,4 +45,37 @@ textarea {
 
 .shadow {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/*
+BROWSER SCROLLBAR KITS
+*/
+
+/* CHROME & SAFARI */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+background-color: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+background: #e9e9e9;
+border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #cfcfcf;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: #cfcfcf;
+  border-radius: 10px;
+}
+
+/* MOZILLA FIREFOX */
+*::-moz-scrollbar {
+  width: 8px;
 }
