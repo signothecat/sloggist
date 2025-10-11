@@ -25,7 +25,7 @@ export default function Sidebar({ channels = [], currentSlug, onSelect, onAdd })
               <button
                 className={styles.sidebarAddBtn}
                 onClick={() => {
-                  const name = prompt("New channel name:");
+                  const name = prompt("New channel name:")?.trim();
                   if (name) onAdd(name);
                 }}
               >
@@ -58,7 +58,7 @@ export default function Sidebar({ channels = [], currentSlug, onSelect, onAdd })
             <button
               className={styles.sidebarAddBtn}
               onClick={() => {
-                const name = prompt("New channel name:");
+                const name = prompt("New channel name:")?.trim();
                 if (name) onAdd(name);
               }}
             >

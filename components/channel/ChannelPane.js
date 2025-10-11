@@ -1,7 +1,10 @@
 // components/channel/ChannelPane.js
 import styles from "@/styles/channel.module.css";
 
-export default function ChannelPane({ slug, logs = [], loading }) {
+export default function ChannelPane({ slug, logs, loading }) {
+  // logsがnullや{}やundefinedの場合にクラッシュしないように配列化
+  const safeLogs = Array.isArray(logs) ? logs : [];
+
   if (!slug)
     return (
       <div className={styles.channelPanel}>
@@ -20,7 +23,7 @@ export default function ChannelPane({ slug, logs = [], loading }) {
       </div>
     );
 
-  if (logs.length === 0)
+  if (safeLogs.length === 0)
     return (
       <div className={styles.channelPanel}>
         <div className={styles.displayNone}>
@@ -32,7 +35,7 @@ export default function ChannelPane({ slug, logs = [], loading }) {
   return (
     <div className={styles.channelPanel}>
       <div className={styles.logList}>
-        {logs.map(log => (
+        {safeLogs.map(log => (
           <div className={styles.logContainer} key={log.id}>
             {log.content}
           </div>

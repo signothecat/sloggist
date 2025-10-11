@@ -33,13 +33,15 @@ export default async function handler(req, res) {
 
     // --- POST：作成 ---
     if (req.method === "POST") {
-      const { name } = req.body ?? {};
-
-      // 名前が未入力なら失敗
-      if (typeof name !== "string" || !(name = name.trim())) {
+      const rawName = req.body?.name;
+      if (typeof rawName !== "string") {
         return res.status(400).json({ error: "Name is required" });
       }
-      // 文字数制限（仮運用）
+
+      const name = rawName.trim();
+      if (!name) {
+        return res.status(400).json({ error: "Name is required" });
+      }
       if (name.length > maxNameLength) {
         return res.status(400).json({ error: "Name cannot exceed 40 characters." });
       }
@@ -66,9 +68,14 @@ export default async function handler(req, res) {
     // --- 未対応のmethodが来た場合 ---
     res.setHeader("Allow", ["GET", "POST"]); // 現時点ではGETとPOSTのみなので
     return res.status(405).json({ error: "Method Not Allowed" });
-  } catch (e) {
+  } catch (err) {
     // --- その他のエラー ---
-    console.error(e);
+    console.error("[/api/channels/index.js] Error", {
+      name: err?.name,
+      code: err?.code,
+      message: err?.message,
+      meta: err?.meta
+    });
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }

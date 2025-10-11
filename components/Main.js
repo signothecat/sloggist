@@ -20,14 +20,15 @@ export default function Main({ children, slug }) {
   // ログの取得
   const fetchLogs = useCallback(async () => {
     if (!slug) {
+      // ルートに移動したときや、初期表示でslugが一瞬未解決のとき
       setLogs([]); // Logをなしに
+      setLoading(false); // loadingをfalseにする
       return;
     }
-    setLoading(true);
     try {
       const res = await fetch(`/api/channels/${slug}/logs`, { cache: "no-store" });
       const data = await res.json();
-      setLogs(data); // 取得したLogを反映
+      setLogs(Array.isArray(data) ? data : []); // ログを配列化して反映（apiがnull/{}を返してもクラッシュしない）
     } finally {
       setLoading(false);
     }
@@ -42,7 +43,10 @@ export default function Main({ children, slug }) {
 
   // ログの反映
   useEffect(() => {
-    setLogs([]); // 表示されているログをクリア
+    // 最初に同一レンダーでloading=trueかつlogを空にする（フリッカー防止）
+    setLoading(true);
+    setLogs([]);
+    // その後fetch開始
     fetchLogs(); // チャンネルのログを取得
   }, [fetchLogs]);
 
@@ -55,15 +59,35 @@ export default function Main({ children, slug }) {
 
   // use in Sidebar: サイドバーのチャンネル追加ボタンが押されたとき
   const onAddChannel = async name => {
-    const res = await fetch("/api/channels", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name })
-    });
-    const newChannel = await res.json();
-    setChannels(prev => [...(prev || []), newChannel]);
-    // 追加後に遷移
-    router.push(`/channel/${newChannel.slug}`, undefined, { shallow: true });
+    const trimmed = name?.trim();
+
+    // 空文字や未入力なら処理しない
+    if (!trimmed) {
+      alert("チャンネル名を入力してください。");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/channels", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: trimmed })
+      });
+
+      if (!res.ok) {
+        // サーバーが400や500を返したときの対処
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "チャンネルの作成に失敗しました。");
+      }
+
+      const newChannel = await res.json();
+
+      setChannels(prev => [...(prev || []), newChannel]);
+      // 追加後に遷移
+      router.push(`/channel/${newChannel.slug}`, undefined, { shallow: true });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   // use in Bottom: ログを送信したとき

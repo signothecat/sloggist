@@ -56,7 +56,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   } catch (err) {
     // --- その他のエラー ---
-    console.error("[/api/channels/[slug]/logs] Error", {
+    console.error("[/api/channels/[slug]/logs.js] Error", {
       name: err?.name,
       code: err?.code,
       message: err?.message,
