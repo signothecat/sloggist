@@ -11,15 +11,16 @@ export default function AppLayout({
   channels,
   onSelectChannel,
   onAddChannel,
-  onSend
+  onSend,
+  currentChannel
 }) {
   return (
     <div className={styles.appLayout}>
       <Sidebar channels={channels} currentSlug={slug} onSelect={onSelectChannel} onAdd={onAddChannel} />
       <div className={styles.mainPanel}>
-        <Header slug={slug} />
+        <Header slug={slug} name={currentChannel?.name} cSlug={currentChannel?.slug} />
         <div className={styles.contentArea}>{children}</div>
-        <Bottom slug={slug} onSend={onSend} />
+        <Bottom slug={slug} name={currentChannel?.name} cSlug={currentChannel?.slug} onSend={onSend} />
       </div>
     </div>
   );

@@ -1,12 +1,13 @@
 /* styles/channel.module.css */
 
 .channelPanel {
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.channelPanel > div {
+.logContainer {
   background: #ffffff;
   padding: 12px 14px;
   border-radius: 8px;
@@ -15,6 +16,19 @@
   transition: background 0.2s;
 }
 
-.channelPanel > div:hover {
+.logContainer:hover {
   background: #f3f4f6;
+}
+
+.displayNone {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.systemMessage {
+  font-size: 14px;
+  color: #9ca3af;
 }

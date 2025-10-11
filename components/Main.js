@@ -1,6 +1,6 @@
 // components/Main.js
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function Main({ children, slug }) {
   const router = useRouter();
@@ -9,12 +9,15 @@ export default function Main({ children, slug }) {
   const [loading, setLoading] = useState(false);
 
   // --- Fetch ---
+
+  // チャンネルの取得
   const fetchChannels = useCallback(async () => {
     const res = await fetch("/api/channels", { cache: "no-store" });
     const data = await res.json();
     setChannels(data);
   }, []);
 
+  // ログの取得
   const fetchLogs = useCallback(async () => {
     if (!slug) {
       setLogs([]); // Logをなしに
@@ -31,19 +34,26 @@ export default function Main({ children, slug }) {
   }, [slug]);
 
   // --- Initial Load & Dependency Changes ---
+
+  // チャンネルの反映
   useEffect(() => {
     fetchChannels();
   }, [fetchChannels]);
+
+  // ログの反映
   useEffect(() => {
     setLogs([]); // 表示されているログをクリア
     fetchLogs(); // チャンネルのログを取得
   }, [fetchLogs]);
 
   // --- Actions ---
+
+  // use in Sidebar: サイドバーのチャンネルを選択変更したとき
   const onSelectChannel = nextSlug => {
     router.push(`/channel/${nextSlug}`, undefined, { shallow: true });
   };
 
+  // use in Sidebar: サイドバーのチャンネル追加ボタンが押されたとき
   const onAddChannel = async name => {
     const res = await fetch("/api/channels", {
       method: "POST",
@@ -56,6 +66,7 @@ export default function Main({ children, slug }) {
     router.push(`/channel/${newChannel.slug}`, undefined, { shallow: true });
   };
 
+  // use in Bottom: ログを送信したとき
   const onSend = async text => {
     if (!slug || !text?.trim()) return;
     await fetch(`/api/channels/${slug}/logs`, {
@@ -67,6 +78,12 @@ export default function Main({ children, slug }) {
     fetchLogs();
   };
 
+  // current channelを渡す
+  const currentChannel = useMemo(() => {
+    if (!channels || !slug) return null;
+    return channels?.find(c => c.slug === slug) || null;
+  }, [channels, slug]);
+
   // --- render-props ---
   return children({
     channels,
@@ -74,7 +91,8 @@ export default function Main({ children, slug }) {
     loading,
     onSelectChannel,
     onAddChannel,
-    onSend
+    onSend,
+    currentChannel
   });
 
   // メモ: children(ctrl); の結果は以下のようになる。

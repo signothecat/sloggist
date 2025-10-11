@@ -3,7 +3,7 @@ import styles from "@/styles/layout.module.css";
 import { SendHorizontal } from "lucide-react";
 import { useRef, useState } from "react";
 
-export default function Bottom({ slug, onSend }) {
+export default function Bottom({ slug, name, cSlug, onSend }) {
   const [textValue, setTextValue] = useState("");
   const textareaRef = useRef(null);
 
@@ -46,23 +46,26 @@ export default function Bottom({ slug, onSend }) {
     <div className={styles.bottom}>
       <div className={styles.bottomContent}>
         <div className={styles.inputContainer} onClick={handleInputContainer}>
-          <textarea
-            ref={textareaRef}
-            className={styles.inputArea}
-            placeholder={slug ? `Send log to ${slug}` : ""}
-            value={textValue}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            rows={1}
-            disabled={!slug}
-          />
+          <div className={styles.inputField}>
+            <div className={styles.placeholderOverlay}>{!textValue && slug ? `Send log to #${name}` : ""}</div>
+            <textarea
+              ref={textareaRef}
+              className={styles.inputArea}
+              // placeholder={slug ? `Send log to ${slug}` : ""}
+              value={textValue}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+              rows={1}
+              disabled={!slug}
+            />
+          </div>
           <button
             type="button"
             className={styles.sendButton}
             aria-label="Send"
             onClick={handleSubmit}
             disabled={!textValue.trim() || !slug}
-            title="Send (Enter)"
+            title="Send"
           >
             <SendHorizontal size={16} />
           </button>

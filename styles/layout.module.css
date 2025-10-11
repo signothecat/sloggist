@@ -22,8 +22,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 16px;
-  margin-bottom: 12px;
+  margin: 12px 0;
 }
 
 .sidebarTitle {
@@ -116,10 +115,17 @@
 .header {
   background: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
-  padding: 12px 20px;
 }
 
 .headerInner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 16px;
+}
+
+.headerTitleWrapper {
   display: flex;
   min-width: 0;
 }
@@ -127,10 +133,26 @@
 .headerTitle {
   flex: 1;
   min-width: 0;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
+  line-height: 18px;
   color: #111827;
   margin: 0;
+  /* overflowの `…` 表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerSlugWrapper {
+  display: flex;
+  min-width: 0;
+}
+
+.headerSlug {
+  font-size: 11px;
+  line-height: 13px;
+  color: #848484;
   /* overflowの `…` 表示 */
   white-space: nowrap;
   overflow: hidden;
@@ -141,7 +163,6 @@
 .contentArea {
   min-width: 0;
   flex: 1;
-  padding: 16px 20px;
   overflow-y: auto;
   background: #f9fafb;
 }
@@ -163,21 +184,46 @@
 
 .inputContainer {
   display: flex;
+  min-width: 0;
+  flex: 1;
   align-items: flex-end;      /* テキストエリアの下辺とボタンの下辺を揃える */
   gap: 8px;                   /* テキストエリアとボタンの間隔 */
-  flex: 1;
-  min-width: 0;
   padding: 8px 8px 8px 16px;
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 28px;
 }
 
+.inputField {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  position: relative;
+}
+
+.placeholderOverlay {
+  position: absolute;
+  inset: 0;              /* ラッパー内に広げる */
+  width: 100%;
+  align-items: center;   /* 上下中央揃え */
+  padding: 4px;          /* textarea の padding と合わせる */
+  font-size: 14px;
+  line-height: 1.5rem;
+  color: #9ca3af;
+  pointer-events: none;  /* クリックは textarea へ */
+  /* overflowの `…` 表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .inputArea {
   flex: 1;
+  min-width: 0;
   width: 100%;
   align-self: center;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.5rem;
   vertical-align: middle;
   outline: none;
@@ -185,7 +231,6 @@
   border-radius: 6px;
   background-color: transparent;
   padding: 4px;
-  overflow: hidden;
 }
 
 .sendButton {
@@ -215,11 +260,13 @@
 }
 
 .noteWrapper {
-  padding: 0 4px;
+  padding: 0 6px;
   text-align: right;
 }
 
 .note {
-  font-size: 0.75rem;
+  font-size: 11px;
+  line-height: 11px;
+  margin: 0;
   color: #848484;
 }
