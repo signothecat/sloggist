@@ -1,28 +1,14 @@
 // pages/index.js
+import { bootstrapUser } from "@/actions/bootstrapUser";
 import { getTokenCookie, setTokenCookie } from "@/lib/cookies";
-import { bootstrapUserContext } from "@/lib/services/bootstrap";
 
 export async function getServerSideProps({ req, res }) {
-  // tokenのCookieを探して入れる
   const token = getTokenCookie(req) ?? null;
-
-  // bootstrapUserContextの結果をuser, homeSlugに入れる
-  const { user, homeSlug } = await bootstrapUserContext({
-    token,
-    createHome: true,
-    seed: false
-  });
-
-  // tokenがなければbootstrapUserContextからもらったuser.tokenをセットする
-  if (!token) {
-    setTokenCookie(res, user.token);
-  }
+  const { user, homeSlug } = await bootstrapUser({ token }); // ユーザー作成 & Home作成
+  if (!token) setTokenCookie(res, user.token); // Cookieにtokenをセット
 
   return {
-    redirect: {
-      destination: `/channel/${homeSlug}`,
-      permanent: false
-    }
+    redirect: { destination: `/channel/${homeSlug}`, permanent: false }
   };
 }
 

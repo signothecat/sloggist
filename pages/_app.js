@@ -7,11 +7,10 @@ import { useRouter } from "next/router";
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter();
 
-  if (!router.isReady) {
-    return null;
-  }
+  // if (!router.isReady) {
+  //   return null;
+  // }
 
-  // slug：router.queryから入れる
   const rawSlug = router.query.slug; // router.queryからslugを取り出す
   const slug = typeof rawSlug === "string" ? rawSlug : rawSlug?.[0]; // slugに入れる（rawSlugが配列なら最初の項目を取得）
 

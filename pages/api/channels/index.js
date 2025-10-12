@@ -1,80 +1,63 @@
 // pages/api/channels/index.js
 import { getTokenCookie } from "@/lib/cookies";
+import { HttpError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
-import { bootstrapUserContext } from "@/lib/services/bootstrap";
+import { respond } from "@/pages/api/_utils/respond";
+import { requireUser } from "@/services/users";
 
 export default async function handler(req, res) {
-  try {
-    // --- 認証 ---
-
-    // token：Cookieを探して入れる
+  await respond(req, res, async () => {
     const token = getTokenCookie(req) ?? null;
+    const user = await requireUser({ token }); // tokenでuserが解決しなければ401
 
-    // user：bootstrapUserContextが返したuserをconst userに入れる
-    console.log("api/channelsからuserContext発火");
-    const { user } = await bootstrapUserContext({ token: token });
-    if (!user?.id) {
-      // 万が一userが存在しない、あるいはuser.idが見つからない場合
-      return res.status(401).json({ error: "User undefined" });
-    }
-
-    // --- GET：チャンネルの取得 ---
     if (req.method === "GET") {
       const channels = await prisma.channel.findMany({
         where: { userId: user.id },
         select: { id: true, name: true, slug: true },
         orderBy: { createdAt: "asc" }
       });
-      // 成功
       return res.status(200).json(channels);
     }
 
-    // --- POST：作成 ---
     if (req.method === "POST") {
       const maxNameLength = 40;
       const rawName = req.body?.name;
-      if (typeof rawName !== "string") {
-        return res.status(400).json({ error: "Name is required" });
-      }
+      const name = typeof rawName === "string" ? rawName.trim() : "";
 
-      const name = rawName.trim();
-      if (!name) {
-        return res.status(400).json({ error: "Name is required" });
-      }
+      if (!name)
+        throw new HttpError(400, "Name is required", {
+          code: "CHANNEL_NAME_REQUIRED"
+        });
       if (name.length > maxNameLength) {
-        return res.status(400).json({ error: "Name cannot exceed 40 characters." });
+        throw new HttpError(400, "Name cannot exceed 40 characters.", {
+          code: "CHANNEL_NAME_TOO_LONG",
+          meta: { len: name.length }
+        });
       }
 
       try {
         const channel = await prisma.channel.create({
-          data: {
-            name,
-            userId: user.id
-          },
+          data: { name, userId: user.id },
           select: { id: true, name: true, slug: true }
         });
-        // 成功
         return res.status(201).json(channel);
       } catch (e) {
-        // Prismaのunique制約との衝突
+        // Prisma unique 衝突
         if (e?.code === "P2002") {
-          return res.status(409).json({ error: "Channel already exists" });
+          throw new HttpError(409, "Channel already exists", {
+            code: "CHANNEL_NAME_CONFLICT",
+            meta: { userId: user.id, name }
+          });
         }
-        throw e; // それ以外は上へ投げる
+        throw e; // それ以外は500 系でrespond()が処理
       }
     }
 
-    // --- 未対応のmethodが来た場合 ---
-    res.setHeader("Allow", ["GET", "POST"]); // 現時点ではGETとPOSTのみなので
-    return res.status(405).json({ error: "Method Not Allowed" });
-  } catch (err) {
-    // --- その他のエラー ---
-    console.error("[/api/channels/index.js] Error", {
-      name: err?.name,
-      code: err?.code,
-      message: err?.message,
-      meta: err?.meta
+    // Not allowed
+    res.setHeader("Allow", ["GET", "POST"]);
+    throw new HttpError(405, "Method Not Allowed", {
+      code: "METHOD_NOT_ALLOWED",
+      meta: { method: req.method }
     });
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
+  });
 }
