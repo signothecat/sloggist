@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { bootstrapUserContext } from "@/lib/services/bootstrap";
 
 export default async function handler(req, res) {
-  const maxNameLength = 40;
-
   try {
     // --- 認証 ---
 
@@ -15,8 +13,8 @@ export default async function handler(req, res) {
     // user：bootstrapUserContextが返したuserをconst userに入れる
     console.log("api/channelsからuserContext発火");
     const { user } = await bootstrapUserContext({ token: token });
-    // 万が一userが存在しない、あるいはuser.idが見つからない場合
     if (!user?.id) {
+      // 万が一userが存在しない、あるいはuser.idが見つからない場合
       return res.status(401).json({ error: "User undefined" });
     }
 
@@ -33,6 +31,7 @@ export default async function handler(req, res) {
 
     // --- POST：作成 ---
     if (req.method === "POST") {
+      const maxNameLength = 40;
       const rawName = req.body?.name;
       if (typeof rawName !== "string") {
         return res.status(400).json({ error: "Name is required" });
