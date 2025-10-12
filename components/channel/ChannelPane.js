@@ -1,41 +1,32 @@
 // components/channel/ChannelPane.js
 import styles from "@/styles/channel.module.css";
 
-export default function ChannelPane({ slug, logs, loading }) {
-  // logsがnullや{}やundefinedの場合にクラッシュしないように配列化
-  const safeLogs = Array.isArray(logs) ? logs : [];
+export default function ChannelPane({ slug, view }) {
+  if (!slug || view?.status === "unselected") {
+    return ui("Select your channel from sidebar!");
+  }
 
-  if (!slug)
-    return (
-      <div className={styles.channelPanel}>
-        <div className={styles.displayNone}>
-          <div className={styles.systemMessage}>Select your channel from sidebar!</div>
-        </div>
-      </div>
-    );
+  if (view.status === "idle" || view.status === "loading" || view.status === "refreshing") {
+    return ui("Loading...");
+  }
 
-  if (loading)
-    return (
-      <div className={styles.channelPanel}>
-        <div className={styles.displayNone}>
-          <div className={styles.systemMessage}>Loading...</div>
-        </div>
-      </div>
-    );
+  if (view.status === "error") {
+    return ui("Failed to load logs.");
+  }
 
-  if (safeLogs.length === 0)
-    return (
-      <div className={styles.channelPanel}>
-        <div className={styles.displayNone}>
-          <div className={styles.systemMessage}>There's no logs yet.</div>
-        </div>
-      </div>
-    );
+  // logを配列化してsafeに入れる
+  const safe = Array.isArray(view.data) ? view.data : [];
 
+  // ログなし
+  if (safe.length === 0) {
+    return ui("There's no logs yet.");
+  }
+
+  // ログあり
   return (
     <div className={styles.channelPanel}>
       <div className={styles.logList}>
-        {safeLogs.map(log => (
+        {safe.map(log => (
           <div className={styles.logContainer} key={log.id}>
             {log.content}
           </div>
@@ -43,4 +34,14 @@ export default function ChannelPane({ slug, logs, loading }) {
       </div>
     </div>
   );
+
+  function ui(message) {
+    return (
+      <div className={styles.channelPanel}>
+        <div className={styles.displayNone}>
+          <div className={styles.systemMessage}>{message}</div>
+        </div>
+      </div>
+    );
+  }
 }

@@ -19,7 +19,7 @@ export default function MyApp({ Component, pageProps }) {
     <Main slug={slug}>
       {ctrl => (
         <AppLayout {...ctrl} slug={slug}>
-          <Component {...pageProps} slug={slug} logs={ctrl.logs} loading={ctrl.loading} />
+          <Component {...pageProps} slug={slug} view={ctrl.view} />
         </AppLayout>
       )}
     </Main>

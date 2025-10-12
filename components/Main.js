@@ -1,134 +1,156 @@
 // components/Main.js
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export default function Main({ children, slug }) {
   const router = useRouter();
-  const [channels, setChannels] = useState(null);
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  // --- Fetch ---
+  // === State ===
+
+  const [channels, setChannels] = useState(null);
+
+  // channelごとの内容の取得結果のcache(status + data)、key は slug、{ [slug]: {status, data} }
+  const [resourceCache, setResourceCache] = useState({});
+
+  // === Ref ====
+
+  // race condition 対策
+  const seqRef = useRef(0); // number, mutable, from 0, increment
+  const latestReqRef = useRef({}); // { [slug]: number }, channelごとの最後に発行したreqIdを保持
+
+  // === Data fetching ===
 
   // チャンネルの取得
   const fetchChannels = useCallback(async () => {
     const res = await fetch("/api/channels", { cache: "no-store" });
-    const data = await res.json();
-    setChannels(data);
+    setChannels(await res.json());
   }, []);
 
   // ログの取得
-  const fetchLogs = useCallback(async () => {
-    if (!slug) {
-      // ルートに移動したときや、初期表示でslugが一瞬未解決のとき
-      setLogs([]); // Logをなしに
-      setLoading(false); // loadingをfalseにする
-      return;
-    }
+  const fetchLogsOf = useCallback(async (targetSlug, { force = false } = {}) => {
+    if (!targetSlug) return;
+
+    // 既存データの有無で loading / refreshing を決定
+    setResourceCache(prev => {
+      const prevItem = prev[targetSlug];
+      const hasData = Array.isArray(prevItem?.data);
+      const nextStatus = hasData ? "refreshing" : "loading";
+      if (!force && prevItem?.status === "success") {
+        return { ...prev, [targetSlug]: { status: "refreshing", data: prevItem.data } };
+      }
+      return { ...prev, [targetSlug]: { status: nextStatus, data: hasData ? prevItem.data : null } };
+    });
+
+    const reqId = ++seqRef.current; // たとえば初回なら reqId = 1, seqRef.current = 1
+    latestReqRef.current[targetSlug] = reqId;
+
     try {
-      const res = await fetch(`/api/channels/${slug}/logs`, { cache: "no-store" });
-      const data = await res.json();
-      setLogs(Array.isArray(data) ? data : []); // ログを配列化して反映（apiがnull/{}を返してもクラッシュしない）
-    } finally {
-      setLoading(false);
+      const res = await fetch(`/api/channels/${targetSlug}/logs`, { cache: "no-store" });
+      const json = await res.json();
+      const data = Array.isArray(json) ? json : [];
+
+      // 最新リクエストでなければ棄却
+      if (latestReqRef.current[targetSlug] !== reqId) return;
+
+      // 最新リクエストだと確認できたら、キャッシュする
+      setResourceCache(prev => ({ ...prev, [targetSlug]: { status: "success", data } }));
+    } catch (e) {
+      // エラーの場合
+      console.error(e);
+      if (latestReqRef.current[targetSlug] !== reqId) return;
+      setResourceCache(prev => ({
+        ...prev,
+        [targetSlug]: { status: "error", data: prev[targetSlug]?.data ?? null }
+      }));
     }
-  }, [slug]);
+  }, []);
 
-  // --- Initial Load & Dependency Changes ---
+  // === Effects ===
 
-  // チャンネルの反映
+  // 初回
   useEffect(() => {
     fetchChannels();
   }, [fetchChannels]);
 
-  // ログの反映
+  // slug 変更でその slug だけ取得（既に success なら何もしない）
   useEffect(() => {
-    // 最初に同一レンダーでloading=trueかつlogを空にする（フリッカー防止）
-    setLoading(true);
-    setLogs([]);
-    // その後fetch開始
-    fetchLogs(); // チャンネルのログを取得
-  }, [fetchLogs]);
+    if (!slug) return;
+    const cur = resourceCache[slug];
+    if (cur?.status === "success" || cur?.status === "loading" || cur?.status === "refreshing") return;
+    fetchLogsOf(slug);
+  }, [slug, resourceCache, fetchLogsOf]);
 
-  // --- Actions ---
+  // === Event handlers ===
 
-  // use in Sidebar: サイドバーのチャンネルを選択変更したとき
+  // チャンネル選択時
   const onSelectChannel = nextSlug => {
-    router.push(`/channel/${nextSlug}`, undefined, { shallow: true });
+    if (!nextSlug) return;
+    if (nextSlug === slug) return;
+    router.push(`/channel/${nextSlug}`, undefined, { shallow: true }); // 状態はuseEffectで処理
   };
 
-  // use in Sidebar: サイドバーのチャンネル追加ボタンが押されたとき
+  // チャンネル作成時
   const onAddChannel = async name => {
     const trimmed = name?.trim();
-
-    // 空文字や未入力なら処理しない
     if (!trimmed) {
-      alert("チャンネル名を入力してください。");
+      alert("Name must contain characters.");
       return;
     }
-
     try {
       const res = await fetch("/api/channels", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: trimmed })
       });
-
-      if (!res.ok) {
-        // サーバーが400や500を返したときの対処
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "チャンネルの作成に失敗しました。");
-      }
-
+      if (!res.ok) throw await res.json().catch(() => ({}));
       const newChannel = await res.json();
-
       setChannels(prev => [...(prev || []), newChannel]);
-      // 追加後に遷移
       router.push(`/channel/${newChannel.slug}`, undefined, { shallow: true });
     } catch (e) {
       console.error(e);
     }
   };
 
-  // use in Bottom: ログを送信したとき
+  // ログ送信（送信時に再取得）
   const onSend = async text => {
-    console.log(`${slug}にてonSend発火`);
     if (!slug || !/\S/.test(text)) return;
     await fetch(`/api/channels/${slug}/logs`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: text })
     });
-    // 再取得
-    fetchLogs();
+    fetchLogsOf(slug, { force: true });
   };
 
-  // current channelを渡す
+  // === Selectors / Derived state ===
+
+  // view（UIに渡す唯一の現在の表示状態）
+  // view: { status: 'unselected' | 'idle' | 'loading' | 'refreshing' | 'success' | 'error', data: Log[] | null }
+  const view = useMemo(() => {
+    if (!slug) return { status: "unselected", data: null };
+    return resourceCache[slug] ?? { status: "idle", data: null };
+  }, [slug, resourceCache]);
+
+  // 現在のチャンネルを返す関数
   const currentChannel = useMemo(() => {
     if (!channels || !slug) return null;
-    return channels?.find(c => c.slug === slug) || null;
+    return channels.find(c => c.slug === slug) || null;
   }, [channels, slug]);
 
-  // --- render-props ---
-  return children({
-    channels,
-    logs,
-    loading,
-    onSelectChannel,
-    onAddChannel,
-    onSend,
-    currentChannel
-  });
+  // === Render ===
 
-  // メモ: children(ctrl); の結果は以下のようになる。
+  // render-props
+  return children({ channels, view, onSelectChannel, onAddChannel, onSend, currentChannel });
+
+  // メモ: children(ctrl); の結果は以下のようになる
   // <AppLayout {...ctrl}>
-  //   <Component {...pageProps} slug={slug} />
+  //   <Component {...pageProps} />
   // </AppLayout>
   //
-  // なぜなら、
+  // なぜなら、_app.jsにより、childrenには以下のような関数が入るから
   // children = ctrl => {
-  //   <AppLayout {...ctrl} slug={slug}>
-  //     <Component {...pageProps} slug={slug} logs={ctrl.logs} loading={ctrl.loading} />
+  //   <AppLayout {...ctrl}>
+  //     <Component {...pageProps} />
   //   </AppLayout>
   // }
 }
