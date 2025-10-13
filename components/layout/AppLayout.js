@@ -4,23 +4,17 @@ import Bottom from "./Bottom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
-export default function AppLayout({
-  // 親から受け取ったprops
-  children,
-  slug,
-  channels,
-  onSelectChannel,
-  onAddChannel,
-  onSend,
-  currentChannel
-}) {
+export default function AppLayout({ children }) {
   return (
     <div className={styles.appLayout}>
-      <Sidebar channels={channels} currentSlug={slug} onSelect={onSelectChannel} onAdd={onAddChannel} />
+      <Sidebar />
       <div className={styles.mainPanel}>
-        <Header slug={slug} name={currentChannel?.name} cSlug={currentChannel?.slug} />
-        <div className={styles.contentArea}>{children}</div>
-        <Bottom slug={slug} name={currentChannel?.name} cSlug={currentChannel?.slug} onSend={onSend} />
+        <Header />
+        <div className={styles.contentArea}>
+          {/* <ChannelPane>([slug].js)がreturnされる */}
+          {children}
+        </div>
+        <Bottom />
       </div>
     </div>
   );

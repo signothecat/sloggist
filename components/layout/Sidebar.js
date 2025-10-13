@@ -1,8 +1,15 @@
 // components/layout/Sidebar.js
+import { useChannels } from "@/contexts/channels";
+import { useLogs } from "@/contexts/logs";
+import { useUser } from "@/contexts/user";
 import styles from "@/styles/layout.module.css";
 import { Hash, PanelLeft, Plus, Target } from "lucide-react";
 
-export default function Sidebar({ channels = [], currentSlug, onSelect, onAdd }) {
+export default function Sidebar() {
+  const { username } = useUser();
+  const { channels, addChannel } = useChannels();
+  const { currentSlug, selectChannel } = useLogs();
+
   // チャンネルが無い場合
   if (!channels || channels.length === 0) {
     return (
@@ -24,9 +31,11 @@ export default function Sidebar({ channels = [], currentSlug, onSelect, onAdd })
               <div className={styles.sidebarTitleText}>Channels</div>
               <button
                 className={styles.sidebarAddBtn}
-                onClick={() => {
-                  const name = prompt("New channel name:")?.trim();
-                  if (name) onAdd(name);
+                onClick={async () => {
+                  const name = prompt("New channel name:");
+                  if (!name) return;
+                  const newChannel = await addChannel(name);
+                  if (newChannel) selectChannel(newChannel.slug);
                 }}
               >
                 <Plus size={16} strokeWidth={2} />
@@ -57,9 +66,11 @@ export default function Sidebar({ channels = [], currentSlug, onSelect, onAdd })
             <div className={styles.sidebarTitleText}>Channels</div>
             <button
               className={styles.sidebarAddBtn}
-              onClick={() => {
-                const name = prompt("New channel name:")?.trim();
-                if (name) onAdd(name);
+              onClick={async () => {
+                const name = prompt("New channel name:");
+                if (!name) return;
+                const newChannel = await addChannel(name);
+                if (newChannel) selectChannel(newChannel.slug);
               }}
             >
               <Plus size={16} strokeWidth={2} />
@@ -67,7 +78,11 @@ export default function Sidebar({ channels = [], currentSlug, onSelect, onAdd })
           </div>
           <ul className={styles.channelList}>
             {channels.map(c => (
-              <li key={c.id} onClick={() => onSelect(c.slug)} className={`${styles.channelListItem} ${c.slug === currentSlug ? styles.active : ""}`}>
+              <li
+                key={c.id}
+                onClick={() => selectChannel(c.slug)}
+                className={`${styles.channelListItem} ${c.slug === currentSlug ? styles.active : ""}`}
+              >
                 <div className={styles.channelIcon}>
                   <Hash size={14} strokeWidth={2.5} />
                 </div>

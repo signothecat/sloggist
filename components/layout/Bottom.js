@@ -1,9 +1,15 @@
 // components/layout/Bottom.js
+import { useChannels } from "@/contexts/channels";
+import { useLogs } from "@/contexts/logs";
 import styles from "@/styles/layout.module.css";
 import { SendHorizontal } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
-export default function Bottom({ slug, name, cSlug, onSend }) {
+export default function Bottom() {
+  const { channels } = useChannels();
+  const { currentSlug, sendLog } = useLogs();
+  const currentChannelName = channels?.find(c => c.slug === currentSlug)?.name;
+
   const [text, setText] = useState("");
   const textareaRef = useRef(null);
 
@@ -11,54 +17,66 @@ export default function Bottom({ slug, name, cSlug, onSend }) {
     textareaRef.current?.focus(); // textareaにフォーカスを当てる
   };
 
-  const resizeTextArea = e => {
+  const resizeTextArea = useCallback(e => {
     const el = e.currentTarget;
     if (!el) return;
     el.style.height = "auto"; // 一度高さをリセット
     el.style.height = `${el.scrollHeight}px`; // 新しいscrollHeightに基づいて高さを設定
-  };
+  }, []);
 
-  const handleChange = e => {
-    setText(e.target.value);
-    resizeTextArea(e);
-  };
+  const handleChange = useCallback(
+    e => {
+      setText(e.target.value);
+      resizeTextArea(e);
+    },
+    [resizeTextArea]
+  );
 
-  const handleKeyDown = e => {
-    // Ctrl + Enterで送信
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      handleSubmit();
-    }
-    // それ以外（Enterや、Shift + Enter）は改行
-  };
-
-  const handleSubmit = () => {
-    if (!/\S/.test(text)) return;
-    onSend(text);
+  const handleSubmit = useCallback(() => {
+    if (!/\S/.test(text) || !currentSlug) return;
+    sendLog(text, currentSlug);
     setText("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
-  };
+  }, [text, currentSlug, sendLog]);
+
+  const handleKeyDown = useCallback(
+    e => {
+      // Ctrl + Enterで送信
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        handleSubmit();
+      }
+      // それ以外（Enterや、Shift + Enter）は改行
+    },
+    [handleSubmit]
+  );
 
   return (
     <div className={styles.bottom}>
       <div className={styles.bottomContent}>
         <div className={styles.inputContainer} onClick={handleInputContainer}>
           <div className={styles.inputField}>
-            <div className={styles.placeholderOverlay}>{!text && slug ? `Send log to #${name}` : ""}</div>
+            <div className={styles.placeholderOverlay}>{!text && currentSlug ? `Send log to #${currentChannelName}` : ""}</div>
             <textarea
               ref={textareaRef}
               className={styles.inputArea}
-              // placeholder={slug ? `Send log to ${slug}` : ""}
               value={text}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               rows={1}
-              disabled={!slug}
+              disabled={!currentSlug}
             />
           </div>
-          <button type="button" className={styles.sendButton} aria-label="Send" onClick={handleSubmit} disabled={!text.trim() || !slug} title="Send">
+          <button
+            type="button"
+            className={styles.sendButton}
+            aria-label="Send"
+            onClick={handleSubmit}
+            disabled={!text.trim() || !currentSlug}
+            title="Send"
+          >
             <SendHorizontal size={16} />
           </button>
         </div>
