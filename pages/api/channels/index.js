@@ -5,6 +5,13 @@ import { requireUser } from "@/lib/server/services/users";
 import { HttpError } from "@/lib/shared/errors";
 import { respond } from "@/pages/api/_utils/respond";
 
+export const SAFE_CHANNEL_SELECT = {
+  userId: true,
+  name: true,
+  slug: true,
+  isHome: true,
+};
+
 export default async function handler(req, res) {
   await respond(req, res, async () => {
     const token = getTokenCookie(req) ?? null;
@@ -13,8 +20,8 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const channels = await prisma.channel.findMany({
         where: { userId: user.id },
-        select: { id: true, name: true, slug: true },
-        orderBy: { createdAt: "asc" }
+        select: SAFE_CHANNEL_SELECT,
+        orderBy: { createdAt: "asc" },
       });
       return res.status(200).json(channels);
     }
@@ -22,23 +29,23 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
       const maxNameLength = 40;
       const rawName = req.body?.name;
-      const name = typeof rawName === "string" ? rawName.trim() : "";
+      const newName = typeof rawName === "string" ? rawName.trim() : "";
 
-      if (!name)
+      if (!newName)
         throw new HttpError(400, "Name is required", {
-          code: "CHANNEL_NAME_REQUIRED"
+          code: "CHANNEL_NAME_REQUIRED",
         });
-      if (name.length > maxNameLength) {
+      if (newName.length > maxNameLength) {
         throw new HttpError(400, "Name cannot exceed 40 characters.", {
           code: "CHANNEL_NAME_TOO_LONG",
-          meta: { len: name.length }
+          meta: { len: newName.length },
         });
       }
 
       try {
         const channel = await prisma.channel.create({
-          data: { name, userId: user.id },
-          select: { id: true, name: true, slug: true }
+          data: { name: newName, userId: user.id },
+          select: SAFE_CHANNEL_SELECT,
         });
         return res.status(201).json(channel);
       } catch (e) {
@@ -46,7 +53,7 @@ export default async function handler(req, res) {
         if (e?.code === "P2002") {
           throw new HttpError(409, "Channel already exists", {
             code: "CHANNEL_NAME_CONFLICT",
-            meta: { userId: user.id, name }
+            meta: { username: user.username, channelName: newName },
           });
         }
         throw e; // それ以外は500 系でrespond()が処理
@@ -57,7 +64,7 @@ export default async function handler(req, res) {
     res.setHeader("Allow", ["GET", "POST"]);
     throw new HttpError(405, "Method Not Allowed", {
       code: "METHOD_NOT_ALLOWED",
-      meta: { method: req.method }
+      meta: { method: req.method },
     });
   });
 }

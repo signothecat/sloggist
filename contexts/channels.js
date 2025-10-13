@@ -16,8 +16,8 @@ export function ChannelProvider({ children }) {
     setChannels(await res.json());
   }, []);
 
-  const addChannel = useCallback(async name => {
-    const trimmed = name?.trim();
+  const addChannel = useCallback(async newName => {
+    const trimmed = newName?.trim();
     if (!trimmed) {
       alert("Name must contain characters.");
       return;
@@ -26,7 +26,7 @@ export function ChannelProvider({ children }) {
     const res = await fetch("/api/channels", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: trimmed })
+      body: JSON.stringify({ name: trimmed }),
     });
     if (!res.ok) throw await res.json().catch(() => ({}));
     const newChannel = await res.json();
@@ -40,7 +40,8 @@ export function ChannelProvider({ children }) {
   }, [fetchChannels]);
 
   // Homeチャンネルをメモ化
-  const home = useMemo(() => channels?.find(c => c.isHome), [channels]);
+  console.log("channels =", channels, Array.isArray(channels)); // debug
+  const home = useMemo(() => (Array.isArray(channels) ? channels.find(c => c.isHome) : undefined), [channels]);
 
   // 更新の最適化のため、Providerで使うvalueをメモ化
   const value = useMemo(() => ({ channels, home, addChannel }), [channels, home, addChannel]);

@@ -5,6 +5,12 @@ import { prisma } from "@/lib/server/prisma";
 import { HttpError } from "@/lib/shared/errors";
 import { respond } from "@/pages/api/_utils/respond";
 
+export const SAFE_LOG_SELECT = {
+  slug: true,
+  content: true,
+  createdAt: true,
+};
+
 export default async function handler(req, res) {
   await respond(req, res, async () => {
     const token = getTokenCookie(req) ?? null;
@@ -17,7 +23,7 @@ export default async function handler(req, res) {
       const logs = await prisma.log.findMany({
         where: { channelId: channel.id },
         orderBy: { createdAt: "desc" },
-        select: { id: true, content: true, createdAt: true }
+        select: SAFE_LOG_SELECT,
       });
       return res.status(200).json(logs);
     }
@@ -31,7 +37,7 @@ export default async function handler(req, res) {
 
       await prisma.log.create({
         data: { content: formatted, channelId: channel.id, userId: user.id },
-        select: { id: true } // 返り値は今のところ使わないので一旦idのみ選択
+        select: SAFE_LOG_SELECT,
       });
       return res.status(201).json({ ok: true });
     }
@@ -39,7 +45,7 @@ export default async function handler(req, res) {
     res.setHeader("Allow", ["GET", "POST"]);
     throw new HttpError(405, "Method Not Allowed", {
       code: "METHOD_NOT_ALLOWED",
-      meta: { method: req.method }
+      meta: { method: req.method },
     });
   });
 }
