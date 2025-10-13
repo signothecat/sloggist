@@ -28,6 +28,30 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
+.sidebarHeaderTitleContainer {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  cursor: pointer;
+}
+
+.sidebarHeaderLogoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: background 0.1s;
+}
+
+.sidebarHeaderTitle {
+  font-size: 17px;
+  font-weight: 500;
+}
+
 .sidebarHeaderBtn {
   display: flex;
   align-items: center;
@@ -62,15 +86,17 @@
   padding-bottom: 36px;
 }
 
-.sidebarTitle {
+.sidebarTitleContainer {
   display: flex;
+  flex: 0 0 36px;
+  height: 36px;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 0;
+  padding-left: 10px;
+  padding-right: 6px;
 }
 
-.sidebarTitleText {
-  padding-left: 10px;
+.sidebarTitle {
   font-size: 14px;
   color: #848484;
   margin: 0;
@@ -80,7 +106,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 6px;
   height: 32px;
   width: 32px;
   background: transparent;
@@ -102,7 +127,6 @@
 
 .channelList {
   display: flex;
-  flex: 1;
   flex-direction: column;
   list-style: none;
   margin: 0;
@@ -138,6 +162,11 @@
 
 .channelName {
   font-size: 14px;
+  min-width: 0;
+  /* overflowの `…` 表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebarBottom {
@@ -152,8 +181,17 @@
 .sidebarBottomContent {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  align-items: center;
   height: 45px;
+}
+
+.sidebarUsernameContainer {
+  display: flex;
+  align-items: center;
+}
+
+.sidebarUsername {
+  font-size: 16px;
 }
 
 /* --- Main Panel --- */
@@ -186,11 +224,11 @@
 .headerTitle {
   flex: 1;
   min-width: 0;
+  margin: 0;
   font-size: 16px;
   font-weight: 600;
   line-height: 18px;
   color: #111827;
-  margin: 0;
   /* overflowの `…` 表示 */
   white-space: nowrap;
   overflow: hidden;
