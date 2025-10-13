@@ -3,24 +3,21 @@ import { useChannels } from "@/contexts/channels";
 import { useLogs } from "@/contexts/logs";
 import { useUser } from "@/contexts/user";
 import styles from "@/styles/layout.module.css";
-import { Hash, PanelLeft, Plus, Target } from "lucide-react";
+import { Hash, Home, PanelLeft, Plus } from "lucide-react";
 
 export default function Sidebar() {
-  const { username } = useUser();
-  const { channels, addChannel } = useChannels();
+  const { user } = useUser();
+  const { channels, home, addChannel } = useChannels();
   const { currentSlug, selectChannel } = useLogs();
 
-  // チャンネルが無い場合
+  // === チャンネルが無い場合 ===
+
   if (!channels || channels.length === 0) {
     return (
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <div className={styles.sidebarHeaderBtn}>
-            <Target size={18} />
-          </div>
-          <div className={styles.sidebarTitle}>
-            <h2 className={styles.sidebarTitleText}>Channels</h2>
-          </div>
+          <div className={styles.sidebarHeaderBtn}></div>
+          <div className={styles.sidebarTitle}></div>
           <div className={styles.sidebarHeaderBtn}>
             <PanelLeft size={18} />
           </div>
@@ -48,12 +45,21 @@ export default function Sidebar() {
     );
   }
 
-  // チャンネルがある場合
+  // === チャンネルがある場合 ===
+
+  const username = user?.username;
+  const normalChannels = channels.filter(c => !c.isHome); // Home以外の通常チャンネル
+  const homeDisplayName = "Home";
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarHeader}>
         <div className={styles.sidebarHeaderBtn}>
-          <Target size={18} />
+          {username && (
+            <div>
+              <div>{username}さん</div>
+            </div>
+          )}
         </div>
         <div className={styles.sidebarHeaderBtn}>
           <PanelLeft size={18} />
@@ -62,6 +68,16 @@ export default function Sidebar() {
 
       <div className={styles.sidebarContent}>
         <div className={styles.sidebarScrollContainer}>
+          {/* Homeチャンネル */}
+          {home && (
+            <div className={`${styles.channelListItem} ${home.slug === currentSlug ? styles.active : ""}`} onClick={() => selectChannel(home.slug)}>
+              <div className={styles.channelIcon}>
+                <Home size={14} strokeWidth={2.5} />
+              </div>
+              <div className={styles.channelName}>{homeDisplayName}</div>
+            </div>
+          )}
+          {/* 通常チャンネル */}
           <div className={styles.sidebarTitle}>
             <div className={styles.sidebarTitleText}>Channels</div>
             <button
@@ -76,20 +92,24 @@ export default function Sidebar() {
               <Plus size={16} strokeWidth={2} />
             </button>
           </div>
-          <ul className={styles.channelList}>
-            {channels.map(c => (
-              <li
-                key={c.id}
-                onClick={() => selectChannel(c.slug)}
-                className={`${styles.channelListItem} ${c.slug === currentSlug ? styles.active : ""}`}
-              >
-                <div className={styles.channelIcon}>
-                  <Hash size={14} strokeWidth={2.5} />
-                </div>
-                <div className={styles.channelName}>{c.name}</div>
-              </li>
-            ))}
-          </ul>
+          {normalChannels.length === 0 ? (
+            <div className={styles.noChannel}>There's no channel.</div>
+          ) : (
+            <ul className={styles.channelList}>
+              {normalChannels.map(c => (
+                <li
+                  key={c.id}
+                  onClick={() => selectChannel(c.slug)}
+                  className={`${styles.channelListItem} ${c.slug === currentSlug ? styles.active : ""}`}
+                >
+                  <div className={styles.channelIcon}>
+                    <Hash size={14} strokeWidth={2.5} />
+                  </div>
+                  <div className={styles.channelName}>{c.name}</div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 

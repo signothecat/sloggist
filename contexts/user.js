@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 const UserContext = createContext(null);
 
 export function UserProvider({ children }) {
-  const [user, setUser] = useState(null); // ユーザー情報、安全な情報のみ
+  const [user, setUser] = useState(null);
 
   const fetchMe = useCallback(async () => {
     const res = await fetch("/api/me", { cache: "no-store" });
@@ -14,7 +14,8 @@ export function UserProvider({ children }) {
       return;
     }
     const me = await res.json();
-    setUser({ username: me.username, handle: me.handle }); // 安全な情報のみ
+    // me は { authenticated: boolean, user: { username, handle } | null }
+    setUser(me.user ?? null);
   }, []);
 
   useEffect(() => {

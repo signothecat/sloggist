@@ -1,8 +1,8 @@
 // pages/api/channels/[slug]/logs.js
-import { bootstrapChannel } from "@/actions/bootstrapChannel";
-import { getTokenCookie } from "@/lib/cookies";
-import { HttpError } from "@/lib/errors";
-import { prisma } from "@/lib/prisma";
+import { bootstrapChannel } from "@/lib/server/actions/bootstrapChannel";
+import { getTokenCookie } from "@/lib/server/cookies";
+import { prisma } from "@/lib/server/prisma";
+import { HttpError } from "@/lib/shared/errors";
 import { respond } from "@/pages/api/_utils/respond";
 
 export default async function handler(req, res) {

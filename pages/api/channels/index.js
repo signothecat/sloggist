@@ -1,9 +1,9 @@
 // pages/api/channels/index.js
-import { getTokenCookie } from "@/lib/cookies";
-import { HttpError } from "@/lib/errors";
-import { prisma } from "@/lib/prisma";
+import { getTokenCookie } from "@/lib/server/cookies";
+import { prisma } from "@/lib/server/prisma";
+import { requireUser } from "@/lib/server/services/users";
+import { HttpError } from "@/lib/shared/errors";
 import { respond } from "@/pages/api/_utils/respond";
-import { requireUser } from "@/services/users";
 
 export default async function handler(req, res) {
   await respond(req, res, async () => {
