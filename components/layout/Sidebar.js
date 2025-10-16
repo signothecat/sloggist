@@ -3,11 +3,11 @@ import { useChannels } from "@/contexts/channels";
 import { useLogs } from "@/contexts/logs";
 import { useUser } from "@/contexts/user";
 import styles from "@/styles/layout.module.css";
-import { Hash, Home, PanelLeft, Plus, Target } from "lucide-react";
+import { Ellipsis, Hash, Home, PanelLeft, Plus, Search } from "lucide-react";
 
 export default function Sidebar() {
   const { user } = useUser();
-  const { channels, home, addChannel } = useChannels();
+  const { channels, home, addChannel, deleteChannel } = useChannels();
   const { currentSlug, selectChannel } = useLogs();
 
   // === チャンネルが無い場合 ===
@@ -15,17 +15,17 @@ export default function Sidebar() {
   if (!channels || channels.length === 0) {
     return (
       <aside className={styles.sidebar}>
+        {/* サイドバーヘッダー */}
         <div className={styles.sidebarHeader}>
-          <div className={styles.sidebarHeaderTitleContainer}>
-            <div className={styles.sidebarHeaderLogoIcon}>
-              <Target size={18} />
-            </div>
-            <div className={styles.sidebarHeaderTitle}>Sloggist</div>
+          <div className={styles.sidebarHeaderLogo}>
+            <div className={styles.sidebarHeaderLogoIcon}>🪵</div>
+            <div className={styles.sidebarHeaderLogoName}></div>
           </div>
           <div className={styles.sidebarHeaderBtn}>
-            <PanelLeft size={18} />
+            <PanelLeft size={16} />
           </div>
         </div>
+
         <div className={styles.sidebarContent}>
           <div className={styles.sidebarScrollContainer}>
             <div className={styles.sidebarTitleContainer}>
@@ -39,7 +39,7 @@ export default function Sidebar() {
                   if (newChannel) selectChannel(newChannel.slug);
                 }}
               >
-                <Plus size={16} strokeWidth={2} />
+                <Plus size={14} />
               </button>
             </div>
             <div className={styles.noChannel}>There's no channel.</div>
@@ -57,35 +57,46 @@ export default function Sidebar() {
 
   return (
     <aside className={styles.sidebar}>
+      {/* サイドバーヘッダー */}
       <div className={styles.sidebarHeader}>
-        <div className={styles.sidebarHeaderTitleContainer}>
-          <div className={styles.sidebarHeaderLogoIcon}>
-            <Target size={18} />
-          </div>
-          <div className={styles.sidebarHeaderTitle}>Sloggist</div>
+        <div className={styles.sidebarHeaderLogo}>
+          <div className={styles.sidebarHeaderLogoIcon}>🪵</div>
+          {username && <div className={styles.sidebarHeaderLogoName}>{username}</div>}
         </div>
         <div className={styles.sidebarHeaderBtn}>
-          <PanelLeft size={18} />
+          <PanelLeft size={16} />
         </div>
       </div>
 
-      <div className={styles.sidebarContent}>
-        <div className={styles.sidebarScrollContainer}>
-          {/* タイトル：Menu */}
-          <div className={styles.sidebarTitleContainer}>
-            <div className={styles.sidebarTitle}>Menu</div>
-          </div>
+      {/* サイドバー上部メニュー */}
+      <div className={styles.sidebarTopMenu}>
+        <div className={styles.list}>
           {/* Homeチャンネル */}
           {home && (
-            <ul className={styles.channelList}>
-              <li className={`${styles.channelListItem} ${home.slug === currentSlug ? styles.active : ""}`} onClick={() => selectChannel(home.slug)}>
-                <div className={styles.channelIcon}>
-                  <Home size={14} strokeWidth={2.5} />
-                </div>
-                <div className={styles.channelName}>{homeDisplayName}</div>
-              </li>
-            </ul>
+            <div className={`${styles.listItem} ${home.slug === currentSlug ? styles.active : ""}`} onClick={() => selectChannel(home.slug)}>
+              <div className={styles.listItemIcon}>
+                <Home size={14} />
+              </div>
+              <div className={styles.listName}>{homeDisplayName}</div>
+            </div>
           )}
+          {/* 検索 */}
+          <div className={styles.listItem}>
+            <div className={styles.listItemIcon}>
+              <Search size={14} />
+            </div>
+            <div className={styles.listName}>検索</div>
+          </div>
+        </div>
+      </div>
+
+      {/* サイドバースクロール部分 */}
+      <div className={styles.sidebarContent}>
+        <div className={styles.sidebarScrollContainer}>
+          {/* タイトル：Favorites */}
+          <div className={styles.sidebarTitleContainer}>
+            <div className={styles.sidebarTitle}>Favorites</div>
+          </div>
           {/* タイトル：Channels */}
           <div className={styles.sidebarTitleContainer}>
             <div className={styles.sidebarTitle}>Channels</div>
@@ -98,7 +109,7 @@ export default function Sidebar() {
                 if (newChannel) selectChannel(newChannel.slug);
               }}
             >
-              <Plus size={16} strokeWidth={2} />
+              <Plus size={14} />
             </button>
           </div>
           {/* 通常チャンネル一覧 */}
@@ -112,10 +123,15 @@ export default function Sidebar() {
                   onClick={() => selectChannel(c.slug)}
                   className={`${styles.channelListItem} ${c.slug === currentSlug ? styles.active : ""}`}
                 >
-                  <div className={styles.channelIcon}>
-                    <Hash size={14} strokeWidth={2.5} />
+                  <div className={styles.listItemLeft}>
+                    <div className={styles.channelIcon}>
+                      <Hash size={14} />
+                    </div>
+                    <div className={styles.channelName}>{c.name}</div>
                   </div>
-                  <div className={styles.channelName}>{c.name}</div>
+                  <button className={styles.listItemMenuIcon} onClick={() => deleteChannel(c.slug)}>
+                    <Ellipsis size={14} />
+                  </button>
                 </li>
               ))}
             </ul>
@@ -123,14 +139,9 @@ export default function Sidebar() {
         </div>
       </div>
 
+      {/* サイドバー下メニュー */}
       <div className={styles.sidebarBottom}>
-        <div className={styles.sidebarBottomContent}>
-          {username && (
-            <div className={styles.sidebarUsernameContainer}>
-              <div className={styles.sidebarUsername}>{username}</div>
-            </div>
-          )}
-        </div>
+        <div className={styles.sidebarBottomContent}></div>
       </div>
     </aside>
   );

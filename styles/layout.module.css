@@ -15,119 +15,173 @@
   min-width: 230px;
   height: 100%;
   min-height: 0;
-  background: #f9fafb;
-  border-right: 1px solid #e5e7eb;
+  background: var(--background-color-sidebar);
+  border-right: 1px solid var(--border-color);
 }
 
+/* --- Sidebar > sidebarHeader --- */
 .sidebarHeader {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin: 0;
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
+  justify-content: space-between;
+  padding: 6px 8px;
+  color: var(--foreground-color);
 }
 
-.sidebarHeaderTitleContainer {
+.sidebarHeaderLogo {
   display: flex;
   align-items: center;
-  height: 100%;
+  padding: 4px 8px;
+  gap: 6px;
   cursor: pointer;
+  background: transparent;
+  transition: background 0.1s;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.sidebarHeaderLogo:hover {
+  background: var(--background-color-hover-sidebar-list);
 }
 
 .sidebarHeaderLogoIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
   background: transparent;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
-  transition: background 0.1s;
 }
 
-.sidebarHeaderTitle {
-  font-size: 17px;
-  font-weight: 500;
+.sidebarHeaderLogoName {
 }
 
 .sidebarHeaderBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
-  width: 32px;
+  padding: 6px;
   background: transparent;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
   transition: background 0.1s;
 }
 .sidebarHeaderBtn:hover {
-  background-color: #e5e8eb;
+  background-color: var(--background-color-hover-sidebar-list-button);
 }
 
+/* --- Sidebar > sidebarTopMenu --- */
+.sidebarTopMenu {
+  padding: 0 8px 8px 8px;
+  color: var(--foreground-color-sidebar);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.listItem {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 6px 8px;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+.listItem:hover {
+  background: var(--background-color-hover-sidebar-list);
+}
+
+.listItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listItemName {
+}
+
+/* --- Sidebar > sidebarContent --- */
 .sidebarContent {
   display: flex;
   flex: 1;
   min-height: 0;
-  padding: 2px;      /* スクロールバーとsidebar外枠の隙間 */
-  overflow: hidden;  /* 子要素にスクロールを任せる */
+  padding: 0 2px; /* スクロールバーとsidebar外枠の隙間 */
+  overflow: hidden; /* 子要素にスクロールを任せる */
+  color: var(--foreground-color-sidebar);
 }
 
 .sidebarScrollContainer {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding-left: 4px;
+  gap: 1px;
+  padding-left: 6px;
+  padding-right: 4px;
   overflow-y: scroll;
   padding-bottom: 36px;
 }
 
 .sidebarTitleContainer {
   display: flex;
-  flex: 0 0 36px;
-  height: 36px;
   align-items: center;
   justify-content: space-between;
-  padding-left: 10px;
-  padding-right: 6px;
+  padding: 0 4px;
+  margin-top: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-radius: 8px;
+}
+.sidebarTitleContainer:not(:first-child) {
+  margin-top: 10px;
+}
+.sidebarTitleContainer:hover {
+  background: var(--background-color-hover-sidebar-list);
 }
 
 .sidebarTitle {
-  font-size: 14px;
-  color: #848484;
-  margin: 0;
+  font-size: 13px;
+  line-height: 32px;
+  font-weight: 500;
+  color: var(--foreground-color-light);
+  margin-left: 2px;
 }
 
 .sidebarAddBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
-  width: 32px;
+  padding: 6px;
   background: transparent;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
   transition: background 0.1s;
+  color: var(--foreground-color-sidebar);
 }
 .sidebarAddBtn:hover {
-  background: #e5e8eb;
+  background: var(--background-color-hover-sidebar-list-button);
 }
 
 .noChannel {
   padding: 4px 10px;
   font-size: 14px;
-  color: #848484;
+  color: var(--foreground-color-gray);
 }
 
 .channelList {
   display: flex;
   flex-direction: column;
+  gap: 1px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -137,22 +191,30 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-right: 10px;
-  padding: 8px 10px;
+  padding: 0 4px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.15s;
-  font-size: 0.9rem;
+  transition: background 0.1s;
+  font-size: 14px;
+  line-height: 32px;
+  font-weight: 500;
 }
-
 .channelListItem:hover {
-  background: #e5e8eb;
+  background: var(--background-color-hover-sidebar-list);
 }
 
 .active {
-  background: #d1e9f9;
-  color: #0369a1;
-  font-weight: 600;
+  background: var(--background-color-active-sidebar-list);
+  color: var(--foreground-color-active-sidebar);
+  font-weight: 500;
+}
+
+.listItemLeft {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 5px;
+  padding-left: 4px;
 }
 
 .channelIcon {
@@ -163,10 +225,30 @@
 .channelName {
   font-size: 14px;
   min-width: 0;
+  padding-right: 4px;
   /* overflowの `…` 表示 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.listItemMenuIcon {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+  color: var(--foreground-color-sidebar);
+}
+.channelListItem:hover .listItemMenuIcon {
+  display: flex;
+}
+.listItemMenuIcon:hover {
+  background-color: var(--background-color-hover-sidebar-list-button);
 }
 
 .sidebarBottom {
@@ -175,28 +257,20 @@
   align-items: center;
   margin: 0;
   padding: 10px 12px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
 }
 
 .sidebarBottomContent {
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 45px;
-}
-
-.sidebarUsernameContainer {
-  display: flex;
-  align-items: center;
-}
-
-.sidebarUsername {
-  font-size: 16px;
+  height: 28px;
 }
 
 /* --- Main Panel --- */
 .mainPanel {
   min-width: 0;
+  min-height: 0;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -204,8 +278,9 @@
 
 /* --- Header --- */
 .header {
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--background-color);
+  color: var(--foreground-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .headerInner {
@@ -228,7 +303,6 @@
   font-size: 16px;
   font-weight: 600;
   line-height: 18px;
-  color: #111827;
   /* overflowの `…` 表示 */
   white-space: nowrap;
   overflow: hidden;
@@ -243,7 +317,7 @@
 .headerSlug {
   font-size: 11px;
   line-height: 13px;
-  color: #848484;
+  color: var(--foreground-color-gray);
   /* overflowの `…` 表示 */
   white-space: nowrap;
   overflow: hidden;
@@ -253,17 +327,19 @@
 /* --- Content area --- */
 .contentArea {
   min-width: 0;
-  flex: 1;
+  min-height: 0;
+  flex: 1 1 auto;
   overflow-y: auto;
-  background: #ffffff;
+  background: var(--background-color);
 }
 
 /* --- Bottom --- */
 .bottom {
   width: 100%;
   min-width: 0;
-  background-color: #ffffff;
-  border-top: 1px solid #e5e7eb;
+  flex: 0 0 auto;
+  background-color: var(--background-color);
+  border-top: 1px solid var(--border-color);
 }
 
 .bottomContent {
@@ -276,12 +352,11 @@
 .inputContainer {
   display: flex;
   min-width: 0;
-  flex: 1;
-  align-items: flex-end;      /* テキストエリアの下辺とボタンの下辺を揃える */
-  gap: 8px;                   /* テキストエリアとボタンの間隔 */
+  align-items: flex-end; /* テキストエリアの下辺とボタンの下辺を揃える */
+  gap: 8px; /* テキストエリアとボタンの間隔 */
   padding: 8px 8px 8px 16px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
   border-radius: 28px;
 }
 
@@ -295,14 +370,14 @@
 
 .placeholderOverlay {
   position: absolute;
-  inset: 0;              /* ラッパー内に広げる */
+  inset: 0; /* ラッパー内に広げる */
   width: 100%;
-  align-items: center;   /* 上下中央揃え */
-  padding: 4px;          /* textarea の padding と合わせる */
+  align-items: center; /* 上下中央揃え */
+  padding: 4px; /* textarea の padding と合わせる */
   font-size: 14px;
   line-height: 1.5rem;
-  color: #9ca3af;
-  pointer-events: none;  /* クリックは textarea へ */
+  color: var(--foreground-color-light);
+  pointer-events: none; /* クリックは textarea へ */
   /* overflowの `…` 表示 */
   white-space: nowrap;
   overflow: hidden;
@@ -330,21 +405,20 @@
   justify-content: center;
   padding: 8px;
   border: none;
-  /* border: 1px solid #e5e7eb; */
   border-radius: 100px;
-  color: #ffffff;
-  background: #0c6995;
+  color: var(--background-color);
+  background: var(--theme-main-color);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.1s, border-color 0.1s;
 }
 
 .sendButton:hover {
-  background: #d9dadd;
+  opacity: 0.6;
 }
 
 .sendButton:disabled {
-  color: #4b4b4b;
-  background: #eeeeee;
+  color: var(--foreground-color-gray);
+  background: var(--background-color-button-disabled);
   opacity: 0.7;
   cursor: default;
 }
@@ -358,5 +432,5 @@
   font-size: 11px;
   line-height: 11px;
   margin: 0;
-  color: #848484;
+  color: var(--foreground-color-gray);
 }
