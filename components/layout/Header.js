@@ -1,11 +1,11 @@
 // components/layout/Header.js
+import { useChannelRoute } from "@/contexts/channelRoute";
 import { useChannels } from "@/contexts/channels";
-import { useLogs } from "@/contexts/logs";
 import styles from "@/styles/layout.module.css";
 
 export default function Header() {
   const { channels } = useChannels();
-  const { currentSlug } = useLogs();
+  const { currentSlug } = useChannelRoute();
 
   const currentChannelName = channels?.find(c => c.slug === currentSlug)?.name ?? "Welcome👋";
   const safeCurrentSlug = currentChannelName === "Welcome👋" ? "-" : currentSlug;

@@ -1,25 +1,14 @@
 // contexts/logs.js
-import { useRouter } from "next/router";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
 // Context Object = { Provider: <ReactProviderComponent> , ... } を作る
 const LogContext = createContext(null);
 
 export function LogProvider({ children }) {
-  const router = useRouter();
-  const rawSlug = router.query.slug;
-  const currentSlug = typeof rawSlug === "string" ? rawSlug : rawSlug?.[0] || null;
-
   // === state / ref ===
   const [resourceCache, setResourceCache] = useState({}); // { [slug]: {status, data} }
   const seqRef = useRef(0); // number, mutable, from 0, increment. Race condition対策
   const latestReqRef = useRef({}); // { [slug]: number }. channelごとの最後に発行したreqIdを保持. Race condition対策
-
-  // sendLog安定化のため、現在のslugをrefでも保持しておく
-  const slugRef = useRef(currentSlug);
-  useEffect(() => {
-    slugRef.current = currentSlug;
-  }, [currentSlug]);
 
   // fetch logs
   const fetchLogsOf = useCallback(async (targetSlug, { force = false } = {}) => {
@@ -57,8 +46,8 @@ export function LogProvider({ children }) {
   }, []);
 
   // send log by user input
-  const sendLog = useCallback(async (text, targetSlug = slugRef.current) => {
-    if (!currentSlug || !/\S/.test(text)) return;
+  const sendLog = useCallback(async (text, targetSlug) => {
+    if (!targetSlug || !/\S/.test(text)) return;
 
     const optimistic = { id: `tmp-${Date.now()}`, content: text, __tmp: true }; // 楽観更新ui用
 
@@ -73,7 +62,7 @@ export function LogProvider({ children }) {
       const res = await fetch(`/api/channels/${targetSlug}/logs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: text })
+        body: JSON.stringify({ content: text }),
       });
       if (!res.ok) throw new Error("Send Failed");
       fetchLogsOf(targetSlug, { force: true });
@@ -86,34 +75,21 @@ export function LogProvider({ children }) {
     }
   }, []);
 
-  // fetch logs, currentSlug 変更で必要時のみ取得
-  useEffect(() => {
-    if (!currentSlug) return;
-    const current = resourceCache[currentSlug];
-    if (current?.status === "success" || current?.status === "loading" || current?.status === "refreshing") return;
-    fetchLogsOf(currentSlug);
-  }, [currentSlug, resourceCache, fetchLogsOf]);
-
-  const view = useMemo(() => {
-    if (!currentSlug) return { status: "unselected", data: null };
-    return resourceCache[currentSlug] ?? { status: "idle", data: null };
-  }, [currentSlug, resourceCache]);
-
-  const selectChannel = useCallback(
-    nextSlug => {
-      if (!nextSlug || nextSlug === currentSlug) return;
-      router.push(`/channel/${nextSlug}`, undefined, { shallow: true });
+  const getView = useCallback(
+    slug => {
+      if (!slug) return { status: "unselected", data: null };
+      return resourceCache[slug] ?? { status: "idle", data: null };
     },
-    [router, currentSlug]
+    [resourceCache]
   );
 
   // 更新の最適化のため、Providerで使うvalueをメモ化
-  const value = useMemo(() => ({ currentSlug, view, fetchLogsOf, sendLog, selectChannel }), [currentSlug, view, fetchLogsOf, sendLog, selectChannel]);
+  const value = useMemo(() => ({ getView, fetchLogsOf, sendLog }), [getView, fetchLogsOf, sendLog]);
 
   return (
     // 実際に出力されるcomponent名は関数名と同じになる
     <LogContext.Provider value={value}>
-      {/* currentSlug, view, fetchLogsOf, sendLog, selectChannelをchildrenに渡す */}
+      {/* view, fetchLogsOf, sendLogをchildrenに渡す */}
       {children}
     </LogContext.Provider>
   );

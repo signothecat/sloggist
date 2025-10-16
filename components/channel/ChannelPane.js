@@ -1,9 +1,19 @@
 // components/channel/ChannelPane.js
+import { useChannelRoute } from "@/contexts/channelRoute";
 import { useLogs } from "@/contexts/logs";
 import styles from "@/styles/channel.module.css";
+import { useEffect } from "react";
 
 export default function ChannelPane() {
-  const { currentSlug, view } = useLogs();
+  const { currentSlug } = useChannelRoute();
+  const { getView, fetchLogsOf } = useLogs();
+  const view = getView(currentSlug);
+
+  // === idle時（自動fetch） ===
+  useEffect(() => {
+    if (!currentSlug) return;
+    if (view.status === "idle") fetchLogsOf(currentSlug);
+  }, [currentSlug, view.status, fetchLogsOf]);
 
   // === ログ不明時 ===
   if (!currentSlug || view?.status === "unselected") {

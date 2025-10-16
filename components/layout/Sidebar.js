@@ -1,14 +1,14 @@
 // components/layout/Sidebar.js
+import { useChannelRoute } from "@/contexts/channelRoute";
 import { useChannels } from "@/contexts/channels";
-import { useLogs } from "@/contexts/logs";
 import { useUser } from "@/contexts/user";
 import styles from "@/styles/layout.module.css";
 import { Ellipsis, Hash, Home, PanelLeft, Plus, Search } from "lucide-react";
 
 export default function Sidebar() {
   const { user } = useUser();
+  const { currentSlug, selectChannel } = useChannelRoute();
   const { channels, home, addChannel, deleteChannel } = useChannels();
-  const { currentSlug, selectChannel } = useLogs();
 
   // === チャンネルが無い場合 ===
 

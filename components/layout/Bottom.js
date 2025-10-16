@@ -1,4 +1,5 @@
 // components/layout/Bottom.js
+import { useChannelRoute } from "@/contexts/channelRoute";
 import { useChannels } from "@/contexts/channels";
 import { useLogs } from "@/contexts/logs";
 import styles from "@/styles/layout.module.css";
@@ -6,8 +7,9 @@ import { SendHorizontal } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 
 export default function Bottom() {
+  const { currentSlug } = useChannelRoute();
   const { channels } = useChannels();
-  const { currentSlug, sendLog } = useLogs();
+  const { sendLog } = useLogs();
   const currentChannelName = channels?.find(c => c.slug === currentSlug)?.name;
 
   const [text, setText] = useState("");
