@@ -79,7 +79,7 @@ export default function Bottom() {
             disabled={!text.trim() || !currentSlug}
             title="Send"
           >
-            <SendHorizontal size={16} />
+            <SendHorizontal size={16} strokeWidth={1.5} absoluteStrokeWidth={true} />
           </button>
         </div>
         <div className={styles.noteWrapper}>

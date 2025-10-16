@@ -22,7 +22,7 @@ export default function Sidebar() {
             <div className={styles.sidebarHeaderLogoName}></div>
           </div>
           <div className={styles.sidebarHeaderBtn}>
-            <PanelLeft size={16} />
+            <PanelLeft size={16} strokeWidth={1.5} absoluteStrokeWidth={true} />
           </div>
         </div>
 
@@ -39,7 +39,7 @@ export default function Sidebar() {
                   if (newChannel) selectChannel(newChannel.slug);
                 }}
               >
-                <Plus size={14} />
+                <Plus size={14} strokeWidth={1.5} absoluteStrokeWidth={true} />
               </button>
             </div>
             <div className={styles.noChannel}>There's no channel.</div>
@@ -64,7 +64,7 @@ export default function Sidebar() {
           {username && <div className={styles.sidebarHeaderLogoName}>{username}</div>}
         </div>
         <div className={styles.sidebarHeaderBtn}>
-          <PanelLeft size={16} />
+          <PanelLeft size={16} strokeWidth={1.5} absoluteStrokeWidth={true} />
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export default function Sidebar() {
           {home && (
             <div className={`${styles.listItem} ${home.slug === currentSlug ? styles.active : ""}`} onClick={() => selectChannel(home.slug)}>
               <div className={styles.listItemIcon}>
-                <Home size={14} />
+                <Home size={14} strokeWidth={1.5} absoluteStrokeWidth={true} />
               </div>
               <div className={styles.listName}>{homeDisplayName}</div>
             </div>
@@ -83,7 +83,7 @@ export default function Sidebar() {
           {/* 検索 */}
           <div className={styles.listItem}>
             <div className={styles.listItemIcon}>
-              <Search size={14} />
+              <Search size={14} strokeWidth={1.5} absoluteStrokeWidth={true} />
             </div>
             <div className={styles.listName}>検索</div>
           </div>
@@ -109,7 +109,7 @@ export default function Sidebar() {
                 if (newChannel) selectChannel(newChannel.slug);
               }}
             >
-              <Plus size={14} />
+              <Plus size={14} strokeWidth={1.5} absoluteStrokeWidth={true} />
             </button>
           </div>
           {/* 通常チャンネル一覧 */}
@@ -125,12 +125,12 @@ export default function Sidebar() {
                 >
                   <div className={styles.listItemLeft}>
                     <div className={styles.channelIcon}>
-                      <Hash size={14} />
+                      <Hash size={14} strokeWidth={1.5} absoluteStrokeWidth={true} />
                     </div>
                     <div className={styles.channelName}>{c.name}</div>
                   </div>
                   <button className={styles.listItemMenuIcon} onClick={() => deleteChannel(c.slug)}>
-                    <Ellipsis size={14} />
+                    <Ellipsis size={14} strokeWidth={1.5} absoluteStrokeWidth={true} />
                   </button>
                 </li>
               ))}
