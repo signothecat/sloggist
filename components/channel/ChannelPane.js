@@ -15,19 +15,25 @@ export default function ChannelPane() {
     if (view.status === "idle") fetchLogsOf(currentSlug);
   }, [currentSlug, view.status, fetchLogsOf]);
 
-  // === ログ不明時 ===
+  // === ログ未選択 ===
   if (!currentSlug || view?.status === "unselected") {
     return ui("Select your channel from sidebar!");
   }
-  if (view.status === "idle" || view.status === "loading" || view.status === "refreshing") {
+
+  // safeにデータを取り出す
+  const safe = Array.isArray(view.data) ? view.data : []; // logを配列化してsafeに入れる
+
+  // === ログ選択済み、ローディング中 ===
+  if ((view.status === "idle" || view.status === "loading") && safe.length === 0) {
     return ui("Loading...");
   }
+
+  // === ログ選択済み、エラー時 ===
   if (view.status === "error") {
     return ui("Failed to load logs.");
   }
 
-  // === ログありもしくは空 ===
-  const safe = Array.isArray(view.data) ? view.data : []; // logを配列化してsafeに入れる
+  // === ログ選択済み、表示完了時 ===
   if (safe.length === 0) {
     return ui("There's no logs yet.");
   }
