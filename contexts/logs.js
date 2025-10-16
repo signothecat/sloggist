@@ -35,45 +35,88 @@ export function LogProvider({ children }) {
         return;
       }
       const json = await res.json();
-      const data = Array.isArray(json) ? json : [];
+      const serverData = Array.isArray(json) ? json : [];
 
-      if (latestReqRef.current[targetSlug] !== reqId) return; // 最新リクエストでなければ棄却
-      setResourceCache(prev => ({ ...prev, [targetSlug]: { status: "success", data } })); // 最新リクエストならキャッシュする
+      if (latestReqRef.current[targetSlug] !== reqId) return; // 最新リクエストでなければreturn（棄却）
+
+      // 未確定ログを残しつつ確定ログを反映
+      setResourceCache(prev => {
+        const prevData = prev[targetSlug]?.data || []; // 直前のcache
+        const pendingLogs = prevData.filter(log => log?.isOptimistic); // 未確定ログを抽出
+        const merged = [...pendingLogs, ...serverData]; // 未確定ログと確定済みのログをくっつける
+        return { ...prev, [targetSlug]: { status: "success", data: merged } };
+      });
     } catch {
       if (latestReqRef.current[targetSlug] !== reqId) return;
       setResourceCache(prev => ({ ...prev, [targetSlug]: { status: "error", data: prev[targetSlug]?.data ?? null } }));
     }
   }, []);
 
+  const refreshTimerRef = useRef({}); // { [slug]: number }
+
+  const scheduleRefresh = useCallback(
+    (slug, delay = 1000) => {
+      const t = refreshTimerRef.current[slug];
+      if (t) clearTimeout(t);
+      refreshTimerRef.current[slug] = setTimeout(() => {
+        fetchLogsOf(slug, { force: true });
+        refreshTimerRef.current[slug] = null;
+      }, delay);
+    },
+    [fetchLogsOf]
+  );
+
   // send log by user input
-  const sendLog = useCallback(async (text, targetSlug) => {
-    if (!targetSlug || !/\S/.test(text)) return;
+  const sendLog = useCallback(
+    async (text, targetSlug) => {
+      if (!targetSlug || !/\S/.test(text)) return;
 
-    const optimistic = { id: `tmp-${Date.now()}`, content: text, __tmp: true }; // 楽観更新ui用
+      // 仮ログ・optimistic ui
+      const tempSlug = `tmp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const optimisticLog = { slug: tempSlug, content: text, isOptimistic: true }; // data for optimistic ui
 
-    // 楽観更新：targetSlugを使い、currentSlugには依存しない
-    setResourceCache(prev => {
-      const current = prev[targetSlug];
-      const data = Array.isArray(current?.data) ? [optimistic, ...current.data] : [optimistic];
-      return { ...prev, [targetSlug]: { status: "success", data } };
-    });
-
-    try {
-      const res = await fetch(`/api/channels/${targetSlug}/logs`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: text }),
-      });
-      if (!res.ok) throw new Error("Send Failed");
-      fetchLogsOf(targetSlug, { force: true });
-    } catch {
+      // 楽観更新、即時に末尾（先頭）に差し込み
       setResourceCache(prev => {
         const current = prev[targetSlug];
-        const data = (current?.data || []).filter(x => x.id !== optimistic.id);
+        const data = Array.isArray(current?.data) ? [optimisticLog, ...current.data] : [optimisticLog];
         return { ...prev, [targetSlug]: { status: "success", data } };
       });
-    }
-  }, []);
+
+      try {
+        // 並列でPOST
+        const res = await fetch(`/api/channels/${targetSlug}/logs`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: text }),
+        });
+        if (!res.ok) throw new Error("Send Failed");
+
+        // 帰ってきた内容がcreatedに入る
+        const created = await res.json(); // e.g. { id: "...", content, createdAt, clientId }
+
+        // 未確定ログを確定ログに置換
+        setResourceCache(prev => {
+          const currentCache = prev[targetSlug] || { status: "success", data: [] };
+          const currentLogs = Array.isArray(currentCache.data) ? currentCache.data.slice() : []; // 新しい配列を作る(浅いコピー)
+          const foundIndex = currentLogs.findIndex(log => log.slug === tempSlug); // 未確定ログを抽出
+          if (foundIndex !== -1) currentLogs[foundIndex] = { ...created, isOptimistic: false }; // createdの内容で上書き・状態を確定に
+          else currentLogs.unshift({ ...created, isOptimistic: false }); // 万が一見つからない場合(楽観更新の内容が入っているはずなのでほぼありえないが)
+          return { ...prev, [targetSlug]: { status: "success", data: currentLogs } };
+        });
+
+        // まとめてfetch
+        scheduleRefresh(targetSlug, 1000);
+      } catch {
+        // rollback処理
+        setResourceCache(prev => {
+          const current = prev[targetSlug];
+          const data = (current?.data || []).filter(log => log.slug !== tempSlug); // 未確定ログが残っていれば取り除く
+          return { ...prev, [targetSlug]: { status: "success", data } };
+        });
+      }
+    },
+    [fetchLogsOf, scheduleRefresh, setResourceCache]
+  );
 
   const getView = useCallback(
     slug => {

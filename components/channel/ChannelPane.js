@@ -41,7 +41,7 @@ export default function ChannelPane() {
     <div className={styles.channelPanel}>
       <div className={styles.logList}>
         {safe.map(log => (
-          <div className={styles.logContainer} key={log.id}>
+          <div className={styles.logContainer} key={log.slug}>
             {log.content}
           </div>
         ))}

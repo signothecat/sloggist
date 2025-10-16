@@ -35,11 +35,11 @@ export default async function handler(req, res) {
       if (raw.length > 10000) return res.status(413).json({ error: "content is too long" });
       const formatted = raw.replace(/\r\n/g, "\n"); // 改行の正規化
 
-      await prisma.log.create({
+      const created = await prisma.log.create({
         data: { content: formatted, channelId: channel.id, userId: user.id },
         select: SAFE_LOG_SELECT,
       });
-      return res.status(201).json({ ok: true });
+      return res.status(201).json(created);
     }
 
     res.setHeader("Allow", ["GET", "POST"]);

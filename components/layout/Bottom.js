@@ -45,15 +45,28 @@ export default function Bottom() {
 
   const handleKeyDown = useCallback(
     e => {
-      // Ctrl + Enterで送信
-      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      // Enterで送信
+      if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         handleSubmit();
       }
-      // それ以外（Enterや、Shift + Enter）は改行
+
+      // Ctrl + Enter / Command + Enter / Shift + Enter は改行
     },
     [handleSubmit]
   );
+
+  // const handleKeyDown = useCallback(
+  //   e => {
+  //     // Ctrl + Enterで送信
+  //     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+  //       e.preventDefault();
+  //       handleSubmit();
+  //     }
+  //     // それ以外（Enterや、Shift + Enter）は改行
+  //   },
+  //   [handleSubmit]
+  // );
 
   return (
     <div className={styles.bottom}>
