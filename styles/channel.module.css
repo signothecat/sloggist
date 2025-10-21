@@ -11,10 +11,10 @@
 
 .logList {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   gap: 0;
   /* スクロール関連 */
-  overflow-y: scroll;
+  overflow-y: auto;
   /* 色 */
   background-color: #ffffff;
 }
@@ -26,7 +26,7 @@
   /* transition: background 0.2s; */
 }
 .logContainer + .logContainer {          /* 直前(下)にlogContainerを持つlogContainer */
-  border-bottom: 0.5px solid #e6e8eb;  /* 下線 */
+  border-top: 0.5px solid #e6e8eb;  /* 上線 */
 }
 
 .logContainer:hover {

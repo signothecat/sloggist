@@ -5,10 +5,23 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState } fro
 const LogContext = createContext(null);
 
 export function LogProvider({ children }) {
+  // resourceCache[slug].status
+  // - "unselected" : slugなし（＝チャンネル未選択）
+  // - "idle"       : slug選択済みだが、まだfetchLogsOfを呼んでいない
+  // - "loading"    : fetchLogsOf実行中かつhasData=false（初回ロード中）
+  // - "refreshing" : fetchLogsOf実行中かつhasData=true（再取得中）
+  // - "success"    : fetchまたはsendLogが成功（最新データを保持中）
+  // - "error"      : fetchLogsOfが失敗（通信エラー等）
+  // ------------------------------------------------
+  // unselected → idle → loading → success
+  //                                  ↓
+  //                              refreshing → success / error
+
   // === state / ref ===
   const [resourceCache, setResourceCache] = useState({}); // { [slug]: {status, data} }
   const seqRef = useRef(0); // number, mutable, from 0, increment. Race condition対策
   const latestReqRef = useRef({}); // { [slug]: number }. channelごとの最後に発行したreqIdを保持. Race condition対策
+  const [lastLocalSend, setLastLocalSend] = useState(null); // ChannelPaneのスクロールイベント用, {slug, timeStamp}
 
   // fetch logs
   const fetchLogsOf = useCallback(async (targetSlug, { force = false } = {}) => {
@@ -16,8 +29,8 @@ export function LogProvider({ children }) {
 
     // 既存データの有無で loading / refreshing を決定
     setResourceCache(prev => {
-      const prevItem = prev[targetSlug];
-      const hasData = Array.isArray(prevItem?.data);
+      const prevItem = prev[targetSlug]; // 当該slugのcache
+      const hasData = Array.isArray(prevItem?.data); // そのslugのcacheにデータが有るか
       const nextStatus = hasData ? "refreshing" : "loading";
       if (!force && prevItem?.status === "success") {
         return { ...prev, [targetSlug]: { status: "refreshing", data: prevItem.data } };
@@ -43,7 +56,7 @@ export function LogProvider({ children }) {
       setResourceCache(prev => {
         const prevData = prev[targetSlug]?.data || []; // 直前のcache
         const pendingLogs = prevData.filter(log => log?.isOptimistic); // 未確定ログを抽出
-        const merged = [...pendingLogs, ...serverData]; // 未確定ログと確定済みのログをくっつける
+        const merged = [...serverData, ...pendingLogs]; // 確定ログの後ろに未確定ログを挿入
         return { ...prev, [targetSlug]: { status: "success", data: merged } };
       });
     } catch {
@@ -75,12 +88,15 @@ export function LogProvider({ children }) {
       const tempSlug = `tmp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const optimisticLog = { slug: tempSlug, content: text, isOptimistic: true }; // data for optimistic ui
 
-      // 楽観更新、即時に末尾（先頭）に差し込み
+      // 楽観更新、末尾に差し込み
       setResourceCache(prev => {
         const current = prev[targetSlug];
-        const data = Array.isArray(current?.data) ? [optimisticLog, ...current.data] : [optimisticLog];
+        const data = Array.isArray(current?.data) ? [...current.data, optimisticLog] : [optimisticLog];
         return { ...prev, [targetSlug]: { status: "success", data } };
       });
+
+      // ChannelPaneのスクロール用に合図を出す
+      setLastLocalSend({ slug: targetSlug, timeStamp: Date.now() });
 
       try {
         // 並列でPOST
@@ -127,7 +143,7 @@ export function LogProvider({ children }) {
   );
 
   // 更新の最適化のため、Providerで使うvalueをメモ化
-  const value = useMemo(() => ({ getView, fetchLogsOf, sendLog }), [getView, fetchLogsOf, sendLog]);
+  const value = useMemo(() => ({ getView, fetchLogsOf, sendLog, lastLocalSend }), [getView, fetchLogsOf, sendLog, lastLocalSend]);
 
   return (
     // 実際に出力されるcomponent名は関数名と同じになる

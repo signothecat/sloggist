@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const logs = await prisma.log.findMany({
         where: { channelId: channel.id },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: "asc" },
         select: SAFE_LOG_SELECT,
       });
       return res.status(200).json(logs);
