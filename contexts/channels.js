@@ -7,6 +7,10 @@ const ChannelContext = createContext(null);
 export function ChannelProvider({ children }) {
   const [channels, setChannels] = useState(null);
 
+  // ==============================
+  // Handlers
+  // ==============================
+
   const fetchChannels = useCallback(async () => {
     const res = await fetch("/api/channels", { cache: "no-store" });
     if (res.status === 401 || res.status === 404) {
@@ -22,7 +26,6 @@ export function ChannelProvider({ children }) {
       alert("Name must contain characters.");
       return;
     }
-
     const res = await fetch("/api/channels", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -31,20 +34,44 @@ export function ChannelProvider({ children }) {
     if (!res.ok) throw await res.json().catch(() => ({}));
     const newChannel = await res.json();
     setChannels(prev => [...(prev || []), newChannel]);
-
     return newChannel;
   }, []);
+
+  const deleteChannel = useCallback(
+    async slug => {
+      if (!slug) return;
+      if (!confirm("Delete this channel?")) return;
+      // 楽観更新
+      setChannels(prev => (Array.isArray(prev) ? prev.filter(c => c.slug !== slug) : prev));
+
+      const res = await fetch(`/api/channels/${slug}`, { method: "DELETE" });
+      if (!res.ok && res.status !== 204) {
+        // ロールバック
+        await fetchChannels();
+        const err = await res.json().catch(() => ({}));
+        throw err;
+      }
+    },
+    [fetchChannels]
+  );
+
+  // ==============================
+  // Effects / Memos
+  // ==============================
 
   useEffect(() => {
     fetchChannels();
   }, [fetchChannels]);
 
   // Homeチャンネルをメモ化
-  console.log("channels =", channels, Array.isArray(channels)); // debug
   const home = useMemo(() => (Array.isArray(channels) ? channels.find(c => c.isHome) : undefined), [channels]);
 
   // 更新の最適化のため、Providerで使うvalueをメモ化
-  const value = useMemo(() => ({ channels, home, addChannel }), [channels, home, addChannel]);
+  const value = useMemo(() => ({ channels, home, addChannel, deleteChannel }), [channels, home, addChannel, deleteChannel]);
+
+  // ==============================
+  // Render
+  // ==============================
 
   return (
     // 実際に出力されるcomponent名は関数名と同じになる

@@ -4,10 +4,14 @@
   /* main */
   --theme-main-color: #0c6995;
   --background-color: #ffffff;
-  --background-color-button-disabled: #eeeeee;
+  --background-color-button-disabled: #eeeeee; /* クリックできないボタンの色 */
+  --background-color-button-caution: #ef4444; /* やや優しめの赤 */
+  --background-color-button-danger: #dc2626; /* きつめの赤 削除ボタンなど */
+  --background-color-button-danger-strong: #b91c1c; /* きつめの赤hover 削除ボタンなど */
   --foreground-color: #1e1d1d;
   --foreground-color-light: #9c9c9c; /* メニューの仕切り文字、プレースホルダーなど */
   --foreground-color-gray: #848484; /* 一応読めるグレー */
+  --foreground-color-caution: #c5221f; /* やや優しめの赤 */
   --border-color: #ebedf0;
   /* sidebar */
   --background-color-sidebar: #f7f8f7;

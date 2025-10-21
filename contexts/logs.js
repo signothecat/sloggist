@@ -134,6 +134,15 @@ export function LogProvider({ children }) {
     [fetchLogsOf, scheduleRefresh, setResourceCache]
   );
 
+  // チャンネル削除時のcache削除
+  const clearChannelLogs = useCallback(slug => {
+    if (!slug) return;
+    setResourceCache(prev => {
+      const { [slug]: _omit, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
   const getView = useCallback(
     slug => {
       if (!slug) return { status: "unselected", data: null };
@@ -143,7 +152,10 @@ export function LogProvider({ children }) {
   );
 
   // 更新の最適化のため、Providerで使うvalueをメモ化
-  const value = useMemo(() => ({ getView, fetchLogsOf, sendLog, lastLocalSend }), [getView, fetchLogsOf, sendLog, lastLocalSend]);
+  const value = useMemo(
+    () => ({ getView, fetchLogsOf, sendLog, clearChannelLogs, lastLocalSend }),
+    [getView, fetchLogsOf, sendLog, clearChannelLogs, lastLocalSend]
+  );
 
   return (
     // 実際に出力されるcomponent名は関数名と同じになる

@@ -434,3 +434,87 @@
   margin: 0;
   color: var(--foreground-color-gray);
 }
+
+/* --- Dropdown (single-menu with global overlay) --- */
+.itemWithMenu {
+  position: relative;  /* 子をabsoluteで配置する基準 */
+}
+
+.menuOverlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 50;  /* メニューより下、他より上 */
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 32px;  /* 下に出す */
+  bottom: auto;
+  right: 4px;
+  min-width: 160px;
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  z-index: 100;  /* オーバーレイより上 */
+}
+
+.dropdownMenu.dropUp {
+  top: auto;
+  bottom: 32px;  /* 上に出す */
+}
+
+.menuItemBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  color: var(--foreground-color);
+  background: transparent;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: left;
+}
+.menuItemBtn:hover,
+.menuItemBtn:focus {
+  background: var(--background-color-hover-sidebar-list);
+  outline: none;
+}
+
+.menuItemDeleteBtn {
+  color: var(--foreground-color-caution);
+}
+
+.menuDivider {
+  margin: 6px 4px;
+  border-top: 1px solid var(--border-color);
+  opacity: 0.8;
+}
+
+/* 開く瞬間の挙動制御 */
+.dropdownMenu[data-ready="false"] {
+  visibility: hidden; /* 計測はしたいのでdisplayではなくvisibility */
+}
+
+/* メニューを開いている時の挙動調整 */
+.channelListItem.openItem {
+  background: inherit;
+}
+.channelListItem.openItem:hover {
+  background: inherit; /* 子のhoverの影響を消す*/
+}
+.channelListItem.openItem.active {
+  background: var(--background-color-active-sidebar-list); /* activeな表示は消さない */
+}
+.channelListItem.openItem .listItemMenuIcon {
+  display: flex; /* 親のhover時のみellipsisを表示しているのを、常時表示に */
+}
+.channelListItem.openItem .listItemMenuIcon {
+  background-color: var(--background-color-hover-sidebar-list-button);
+}
