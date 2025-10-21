@@ -259,14 +259,13 @@ export default function Sidebar() {
                           onClick={async () => {
                             const targetSlug = c.slug;
                             await deleteChannel(targetSlug);
-                            clearChannelLogs(targetSlug);
                             setMenuOpenSlug(null);
-
                             // 削除後の遷移（通常Homeへ）
                             if (targetSlug === currentSlug) {
                               const nextSlug = home?.slug ?? channels?.find(c => !c.isHome && c.slug !== targetSlug)?.slug;
                               if (nextSlug) selectChannel(nextSlug);
                             }
+                            clearChannelLogs(targetSlug); // ログなどの掃除
                           }}
                         >
                           <Trash2 size={14} strokeWidth={1.5} absoluteStrokeWidth={true} />

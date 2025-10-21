@@ -41,9 +41,7 @@ export function ChannelProvider({ children }) {
     async slug => {
       if (!slug) return;
       if (!confirm("Delete this channel?")) return;
-      // 楽観更新
-      setChannels(prev => (Array.isArray(prev) ? prev.filter(c => c.slug !== slug) : prev));
-
+      setChannels(prev => (Array.isArray(prev) ? prev.filter(c => c.slug !== slug) : prev)); // 楽観更新
       const res = await fetch(`/api/channels/${slug}`, { method: "DELETE" });
       if (!res.ok && res.status !== 204) {
         // ロールバック

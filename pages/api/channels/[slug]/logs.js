@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     const rawSlug = req.query?.slug; // router.queryからslugを取り出す
     const slug = typeof rawSlug === "string" ? rawSlug : rawSlug?.[0]; // slugに入れる（rawSlugが配列なら最初の項目を取得）
 
-    const { user, channel } = await bootstrapChannel({ token, slug });
+    const { user, channel } = await bootstrapChannel({ token, slug }); // user,channelが返るか、400/401/404が返る
 
     if (req.method === "GET") {
       const logs = await prisma.log.findMany({

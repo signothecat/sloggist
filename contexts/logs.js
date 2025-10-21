@@ -44,6 +44,7 @@ export function LogProvider({ children }) {
     try {
       const res = await fetch(`/api/channels/${targetSlug}/logs`, { cache: "no-store" });
       if (res.status === 401 || res.status === 404) {
+        // bootstrapChannel > requireUserで401 / getOwnedChannelで404
         window.location.href = "/";
         return;
       }
@@ -65,12 +66,13 @@ export function LogProvider({ children }) {
     }
   }, []);
 
-  const refreshTimerRef = useRef({}); // { [slug]: number }
+  const refreshTimerRef = useRef({}); // { [slug]: number }, numberはtimerのid
 
   const scheduleRefresh = useCallback(
     (slug, delay = 1000) => {
       const t = refreshTimerRef.current[slug];
       if (t) clearTimeout(t);
+      // refreshTimerRefにkey:slugでtimerのidを追加
       refreshTimerRef.current[slug] = setTimeout(() => {
         fetchLogsOf(slug, { force: true });
         refreshTimerRef.current[slug] = null;
@@ -134,15 +136,23 @@ export function LogProvider({ children }) {
     [fetchLogsOf, scheduleRefresh, setResourceCache]
   );
 
-  // チャンネル削除時のcache削除
+  // チャンネル削除時のcacheやtimerの削除
   const clearChannelLogs = useCallback(slug => {
     if (!slug) return;
+    // 予約中のrefresh timerを止めてrefを消す
+    const timeoutId = refreshTimerRef.current[slug];
+    if (timeoutId) clearTimeout(timeoutId);
+    delete refreshTimerRef.current[slug];
+    // リクエスト記録を消す
+    delete latestReqRef.current[slug];
+    // cacheを消す
     setResourceCache(prev => {
       const { [slug]: _omit, ...rest } = prev;
       return rest;
     });
   }, []);
 
+  // resourceCacheの変化でviewを返す
   const getView = useCallback(
     slug => {
       if (!slug) return { status: "unselected", data: null };

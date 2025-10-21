@@ -1,5 +1,6 @@
 // components/channel/ChannelPane.js
 import { useChannelRoute } from "@/contexts/channelRoute";
+import { useChannels } from "@/contexts/channels";
 import { useLogs } from "@/contexts/logs";
 import styles from "@/styles/channel.module.css";
 import { useEffect, useLayoutEffect, useRef } from "react";
@@ -11,6 +12,7 @@ const NEAR_BOTTOM_PX = 20;
 
 export default function ChannelPane() {
   const { currentSlug } = useChannelRoute();
+  const { channels } = useChannels();
   const { getView, fetchLogsOf, lastLocalSend } = useLogs();
   const view = getView(currentSlug);
   // === スクロール用refs ===
@@ -18,12 +20,14 @@ export default function ChannelPane() {
   const prevViewStatusRef = useRef(view.status);
   const scrollRef = useRef({}); // { [slug]: { initialDone: boolean, wasNearBottom: boolean, scrollTop: number } }
   const restoredThisNavRef = useRef(false); // 遷移内でスクロール位置の復元をしたかどうか
+  const slugExists = !!(currentSlug && Array.isArray(channels) && channels.some(c => c.slug === currentSlug)); // 表示しているチャンネルのslugがchannelsにあるかどうか
 
   // === idle時（自動fetch） ===
   useEffect(() => {
     if (!currentSlug) return;
+    if (!slugExists) return; // 削除直後に自動fetchしないように
     if (view.status === "idle") fetchLogsOf(currentSlug);
-  }, [currentSlug, view.status, fetchLogsOf]);
+  }, [currentSlug, slugExists, view.status, fetchLogsOf]);
 
   // チャンネル切替ごとにscroll関連の状態を初期化
   useLayoutEffect(() => {
