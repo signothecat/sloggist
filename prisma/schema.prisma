@@ -28,7 +28,7 @@ model User {
   home      Channel? @relation("UserHome", fields: [homeId], references: [id])
   channels  Channel[]
   logs      Log[]
-  sessions  Session[]
+  works     Work[]
 
   // 名前変更
   @@map("users")
@@ -50,7 +50,7 @@ model Channel {
   parent   Channel?  @relation("ChannelToChildren", fields: [parentId], references: [id], onDelete: SetNull)
   children Channel[] @relation("ChannelToChildren")
   logs     Log[]
-  sessions Session[]
+  works    Work[]
   // 以下のように階層内でuniqueにしてもいいが、
   // @@unique([userId, parentId, name])
   // 移動したときにめんどくさそうなので一旦同user内でunique制限にする
@@ -87,7 +87,7 @@ model Log {
   @@map("logs")
 }
 
-model Session {
+model Work {
   id        String        @id @default(uuid()) @db.Uuid
   slug      String?       @unique @default(uuid())  // URLにパースするslug
   userId    String        @db.Uuid
@@ -96,7 +96,7 @@ model Session {
   channelId String        @db.Uuid
   startedAt DateTime?     @db.Timestamptz(6)   // 最初のレコードの開始時刻
   endedAt   DateTime?     @db.Timestamptz(6)   // 最後のレコードの終了時刻
-  status    SessionStatus @default(ACTIVE)     // 下で定義するenumを使用
+  status    WorkStatus    @default(ACTIVE)     // 下で定義するenumを使用
   createdAt DateTime      @default(now()) @db.Timestamptz(6)
   updatedAt DateTime      @updatedAt @db.Timestamptz(6)
 
@@ -112,15 +112,15 @@ model Session {
   // statusでフィルタリングしない場合はstatusはいらない
 
   // 名前変更
-  @@map("sessions")
+  @@map("works")
 }
 
 model Interval {
-  //  userIdはSession経由で導出可能なため削除した
+  //  userIdはWork経由で導出可能なため削除した
   id          String    @id @default(uuid()) @db.Uuid
   slug        String?   @unique @default(uuid())  // URLにパースするslug
   name        String?
-  sessionId   String    @db.Uuid
+  workId      String    @db.Uuid
   startedAt   DateTime? @db.Timestamptz(6)     // 開始時刻=タイマーのstart/resumeを押した時刻
   endedAt     DateTime? @db.Timestamptz(6)     // 終了時刻=タイマーのpause/end
   durationSec Int?  // endedAt - startedAt のキャッシュ
@@ -128,10 +128,10 @@ model Interval {
   updatedAt   DateTime  @updatedAt @db.Timestamptz(6)
 
   // Relations
-  session     Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  work        Work   @relation(fields: [workId], references: [id], onDelete: Cascade)
 
   // Indexes
-  @@index([sessionId, startedAt])  // for セッション内の作業記録を開始時刻順で表示するクエリの高速化
+  @@index([workId, startedAt])  // for work内の作業記録を開始時刻順で表示するクエリの高速化
 
   // 名前変更
   @@map("intervals")
@@ -144,13 +144,13 @@ model Interval {
  */
 
 // タイマーの状態管理をサーバーサイドでやりたいのでDBに入れる
-enum SessionStatus {
+enum WorkStatus {
   ACTIVE @map("active")  // タイマー動作中
   PAUSED @map("paused")  // 一時停止中
   ENDED  @map("ended")   // 終了
 }
 
-// Session status flow:
+// Work status flow:
 //   ┌──────────┐       pause      ┌──────────┐
 //   │  ACTIVE  │ ───────────────▶ │  PAUSED  │
 //   └──────────┘ ◀─────────────── └──────────┘
