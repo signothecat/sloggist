@@ -1,0 +1,520 @@
+/* styles/layout.module.css */
+
+/* --- Root layout --- */
+.appLayout {
+  display: flex;
+  height: 100vh;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 230px;
+  min-width: 230px;
+  height: 100%;
+  min-height: 0;
+  background: var(--background-color-sidebar);
+  border-right: 1px solid var(--border-color);
+}
+
+/* --- Sidebar > sidebarHeader --- */
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  color: var(--foreground-color);
+}
+
+.sidebarHeaderLogo {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  gap: 6px;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.1s;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.sidebarHeaderLogo:hover {
+  background: var(--background-color-hover-sidebar-list);
+}
+
+.sidebarHeaderLogoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+}
+
+.sidebarHeaderLogoName {
+}
+
+.sidebarHeaderBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.sidebarHeaderBtn:hover {
+  background-color: var(--background-color-hover-sidebar-list-button);
+}
+
+/* --- Sidebar > sidebarTopMenu --- */
+.sidebarTopMenu {
+  padding: 0 8px 8px 8px;
+  color: var(--foreground-color-sidebar);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.listItem {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 6px 8px;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+.listItem:hover {
+  background: var(--background-color-hover-sidebar-list);
+}
+
+.listItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listItemName {
+}
+
+/* --- Sidebar > sidebarContent --- */
+.sidebarContent {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 0 2px; /* スクロールバーとsidebar外枠の隙間 */
+  overflow: hidden; /* 子要素にスクロールを任せる */
+  color: var(--foreground-color-sidebar);
+}
+
+.sidebarScrollContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 1px;
+  padding-left: 6px;
+  padding-right: 4px;
+  overflow-y: scroll;
+  padding-bottom: 36px;
+}
+
+.sidebarTitleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  margin-top: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-radius: 8px;
+}
+.sidebarTitleContainer:not(:first-child) {
+  margin-top: 10px;
+}
+.sidebarTitleContainer:hover {
+  background: var(--background-color-hover-sidebar-list);
+}
+
+.sidebarTitle {
+  font-size: 13px;
+  line-height: 32px;
+  font-weight: 500;
+  color: var(--foreground-color-light);
+  margin-left: 2px;
+}
+
+.sidebarAddBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+  color: var(--foreground-color-sidebar);
+}
+.sidebarAddBtn:hover {
+  background: var(--background-color-hover-sidebar-list-button);
+}
+
+.noChannel {
+  padding: 4px 10px;
+  font-size: 14px;
+  color: var(--foreground-color-gray);
+}
+
+.channelList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.channelListItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
+  font-size: 14px;
+  line-height: 32px;
+  font-weight: 500;
+}
+.channelListItem:hover {
+  background: var(--background-color-hover-sidebar-list);
+}
+
+.active {
+  background: var(--background-color-active-sidebar-list);
+  color: var(--foreground-color-active-sidebar);
+  font-weight: 500;
+}
+
+.listItemLeft {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 5px;
+  padding-left: 4px;
+}
+
+.channelIcon {
+  display: flex;
+  align-items: center;
+}
+
+.channelName {
+  font-size: 14px;
+  min-width: 0;
+  padding-right: 4px;
+  /* overflowの `…` 表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listItemMenuIcon {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+  color: var(--foreground-color-sidebar);
+}
+.channelListItem:hover .listItemMenuIcon {
+  display: flex;
+}
+.listItemMenuIcon:hover {
+  background-color: var(--background-color-hover-sidebar-list-button);
+}
+
+.sidebarBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.sidebarBottomContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 28px;
+}
+
+/* --- Main Panel --- */
+.mainPanel {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Header --- */
+.header {
+  background: var(--background-color);
+  color: var(--foreground-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.headerInner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 18px;
+}
+
+.headerTitleWrapper {
+  display: flex;
+  min-width: 0;
+}
+
+.headerTitle {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 18px;
+  /* overflowの `…` 表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerSlugWrapper {
+  display: flex;
+  min-width: 0;
+}
+
+.headerSlug {
+  font-size: 11px;
+  line-height: 13px;
+  color: var(--foreground-color-gray);
+  /* overflowの `…` 表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Content area --- */
+.contentArea {
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  background: var(--background-color);
+}
+
+/* --- Bottom --- */
+.bottom {
+  width: 100%;
+  min-width: 0;
+  flex: 0 0 auto;
+  background-color: var(--background-color);
+  border-top: 1px solid var(--border-color);
+}
+
+.bottomContent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 12px 20px 8px 20px;
+}
+
+.inputContainer {
+  display: flex;
+  min-width: 0;
+  align-items: flex-end; /* テキストエリアの下辺とボタンの下辺を揃える */
+  gap: 8px; /* テキストエリアとボタンの間隔 */
+  padding: 8px 8px 8px 16px;
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 28px;
+}
+
+.inputField {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  position: relative;
+}
+
+.placeholderOverlay {
+  position: absolute;
+  inset: 0; /* ラッパー内に広げる */
+  width: 100%;
+  align-items: center; /* 上下中央揃え */
+  padding: 4px; /* textarea の padding と合わせる */
+  font-size: 14px;
+  line-height: 1.5rem;
+  color: var(--foreground-color-light);
+  pointer-events: none; /* クリックは textarea へ */
+  /* overflowの `…` 表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inputArea {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  align-self: center;
+  font-size: 14px;
+  line-height: 1.5rem;
+  vertical-align: middle;
+  outline: none;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  padding: 4px;
+}
+
+.sendButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: none;
+  border-radius: 100px;
+  color: var(--background-color);
+  background: var(--theme-main-color);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.sendButton:hover {
+  opacity: 0.6;
+}
+
+.sendButton:disabled {
+  color: var(--foreground-color-gray);
+  background: var(--background-color-button-disabled);
+  opacity: 0.7;
+  cursor: default;
+}
+
+.noteWrapper {
+  padding: 0 6px;
+  text-align: right;
+}
+
+.note {
+  font-size: 11px;
+  line-height: 11px;
+  margin: 0;
+  color: var(--foreground-color-gray);
+}
+
+/* --- Dropdown (single-menu with global overlay) --- */
+.itemWithMenu {
+  position: relative;  /* 子をabsoluteで配置する基準 */
+}
+
+.menuOverlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 50;  /* メニューより下、他より上 */
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 32px;  /* 下に出す */
+  bottom: auto;
+  right: 4px;
+  min-width: 160px;
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  z-index: 100;  /* オーバーレイより上 */
+}
+
+.dropdownMenu.dropUp {
+  top: auto;
+  bottom: 32px;  /* 上に出す */
+}
+
+.menuItemBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  color: var(--foreground-color);
+  background: transparent;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: left;
+}
+.menuItemBtn:hover,
+.menuItemBtn:focus {
+  background: var(--background-color-hover-sidebar-list);
+  outline: none;
+}
+
+.menuItemDeleteBtn {
+  color: var(--foreground-color-caution);
+}
+
+.menuDivider {
+  margin: 6px 4px;
+  border-top: 1px solid var(--border-color);
+  opacity: 0.8;
+}
+
+/* 開く瞬間の挙動制御 */
+.dropdownMenu[data-ready="false"] {
+  visibility: hidden; /* 計測はしたいのでdisplayではなくvisibility */
+}
+
+/* メニューを開いている時の挙動調整 */
+.channelListItem.openItem {
+  background: inherit;
+}
+.channelListItem.openItem:hover {
+  background: inherit; /* 子のhoverの影響を消す*/
+}
+.channelListItem.openItem.active {
+  background: var(--background-color-active-sidebar-list); /* activeな表示は消さない */
+}
+.channelListItem.openItem .listItemMenuIcon {
+  display: flex; /* 親のhover時のみellipsisを表示しているのを、常時表示に */
+}
+.channelListItem.openItem .listItemMenuIcon {
+  background-color: var(--background-color-hover-sidebar-list-button);
+}

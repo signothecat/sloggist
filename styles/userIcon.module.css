@@ -1,0 +1,8 @@
+.userIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  background: var(--userIcon-bg, #f0f0f0);
+  color: var(--userIcon-fg, #333);
+}

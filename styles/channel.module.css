@@ -1,0 +1,48 @@
+/* styles/channel.module.css */
+
+.channelPanel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #ffffff;
+  padding: 2px;  /* スクロールバーと外枠の隙間 */
+}
+
+.logList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  /* スクロール関連 */
+  overflow-y: auto;
+  /* 色 */
+  background-color: #ffffff;
+}
+
+.logContainer {
+  padding: 18px 18px;
+  line-height: 1.4;
+  background-color: transparent;
+  /* transition: background 0.2s; */
+}
+.logContainer + .logContainer {          /* 直前(下)にlogContainerを持つlogContainer */
+  border-top: 0.5px solid #e6e8eb;  /* 上線 */
+}
+
+.logContainer:hover {
+  background: #eeeff1;
+}
+
+.displayNone {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: #ffffff;
+}
+
+.systemMessage {
+  font-size: 14px;
+  color: #9ca3af;
+}

@@ -1,0 +1,103 @@
+/* styles/globals.css */
+
+:root {
+  /* main */
+  --theme-main-color: #0c6995;
+  --background-color: #ffffff;
+  --background-color-button-disabled: #eeeeee; /* クリックできないボタンの色 */
+  --background-color-button-caution: #ef4444; /* やや優しめの赤 */
+  --background-color-button-danger: #dc2626; /* きつめの赤 削除ボタンなど */
+  --background-color-button-danger-strong: #b91c1c; /* きつめの赤hover 削除ボタンなど */
+  --foreground-color: #1e1d1d;
+  --foreground-color-light: #9c9c9c; /* メニューの仕切り文字、プレースホルダーなど */
+  --foreground-color-gray: #848484; /* 一応読めるグレー */
+  --foreground-color-caution: #c5221f; /* やや優しめの赤 */
+  --border-color: #ebedf0;
+  /* sidebar */
+  --background-color-sidebar: #f7f8f7;
+  --foreground-color-sidebar: #646462;
+  --background-color-hover-sidebar-list: #e4e7eb; /* リストhover */
+  --background-color-hover-sidebar-list-button: #d4d8dc; /* リストのボタンhover */
+  --background-color-active-sidebar-list: #e4e7eb;
+  --foreground-color-active-sidebar: #1e1d1d;
+}
+
+/* --- Reset --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Setup --- */
+html,
+body {
+  height: 100%;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Hiragino Sans GB", メイリオ, Meiryo, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  background-color: var(--background-color);
+  color: var(--foreground-color);
+}
+
+/* Link */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* textarea*/
+textarea {
+  resize: none;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Hiragino Sans GB", メイリオ, Meiryo, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* Utils */
+.flex {
+  display: flex;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-muted {
+  color: #6b7280;
+}
+
+.shadow {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/*
+BROWSER SCROLLBAR KITS
+*/
+
+/* CHROME & SAFARI */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+background-color: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+background: #e9e9e9;
+border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #cfcfcf;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: #cfcfcf;
+  border-radius: 10px;
+}
+
+/* MOZILLA FIREFOX */
+*::-moz-scrollbar {
+  width: 8px;
+}
