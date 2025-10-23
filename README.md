@@ -4,7 +4,7 @@ Log your daily slog.
 
 Fun fact: ‘slog’ is short for ‘super log’ :slightly_smiling_face:  
 
-# Note
+## Note
 
 今後、以下のような修正を予定しています。
 
