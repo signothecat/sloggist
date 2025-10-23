@@ -46,7 +46,7 @@ export default function Bottom() {
   const handleKeyDown = useCallback(
     e => {
       // Enterで送信
-      if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+      if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.nativeEvent.isComposing) {
         e.preventDefault();
         handleSubmit();
       }
@@ -96,7 +96,7 @@ export default function Bottom() {
           </button>
         </div>
         <div className={styles.noteWrapper}>
-          <small className={styles.note}>Ctrl+Enterで送信</small>
+          <small className={styles.note}>Enterで送信（Shift+Enterで改行）</small>
         </div>
       </div>
     </div>
