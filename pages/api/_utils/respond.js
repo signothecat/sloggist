@@ -1,6 +1,6 @@
 // pages/api/_utils/respond.js
 // apiでのみ使う
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 
 export async function respond(req, res, handler) {
   const reqId = randomUUID(); // 相関ID
@@ -14,7 +14,7 @@ export async function respond(req, res, handler) {
       status: err?.status || 500,
       code: err?.code || null,
       message: err?.message,
-      meta: err?.meta
+      meta: err?.meta,
     });
 
     // === 外部用（ユーザーも見えるので詳細は出さない） ===
