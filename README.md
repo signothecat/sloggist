@@ -4,6 +4,11 @@ Log your daily slog.
 
 Fun fact: ‘slog’ is short for ‘super log’ :slightly_smiling_face:  
 
+## Demo
+
+Demo available here! :point_right: [Vercel](https://sloggist.vercel.app/)  
+(First load might take a few seconds.)
+
 ## Note
 
 今後、以下のような修正を予定しています。
