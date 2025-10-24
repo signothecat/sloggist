@@ -1,8 +1,8 @@
 // components/layout/Sidebar.js
-import { useChannelRoute } from "@/contexts/channelRoute";
-import { useChannels } from "@/contexts/channels";
-import { useLogs } from "@/contexts/logs";
-import { useUser } from "@/contexts/user";
+import { useChannelRoute } from "@/contexts/ChannelRouteContext";
+import { useChannels } from "@/contexts/ChannelsContext";
+import { useLogs } from "@/contexts/LogsContext";
+import { useUser } from "@/contexts/UserContext";
 import styles from "@/styles/layout.module.css";
 import { Ellipsis, Hash, Home, PanelLeft, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

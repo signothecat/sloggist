@@ -1,8 +1,8 @@
 // components/layout/AppLayout.js
+import Bottom from "@/components/layout/Bottom";
+import Header from "@/components/layout/Header";
+import Sidebar from "@/components/layout/Sidebar";
 import styles from "@/styles/layout.module.css";
-import Bottom from "./Bottom";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
 
 export default function AppLayout({ children }) {
   return (

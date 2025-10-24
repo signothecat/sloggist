@@ -1,6 +1,6 @@
-// lib/server/user/getUserFromToken.js
+// services/users/getUserFromToken.js
 // 副作用なし、tokenでDBを探して見つけたuserを返す、見つからなければnullを返す
-import { prisma } from "@/lib/server/prisma";
+import { prisma } from "@/lib/prisma";
 
 export const SERVER_USER_SELECT = {
   id: true,

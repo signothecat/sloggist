@@ -1,10 +1,10 @@
-// contexts/channels.js
+// contexts/ChannelsContext.js
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-// Context Object = { Provider: <ReactProviderComponent> , ... } を作る
-const ChannelContext = createContext(null);
+// Context Object = { Provider: <ReactProviderComponent> , Consumer: ... } を作る
+const ChannelsContext = createContext(undefined);
 
-export function ChannelProvider({ children }) {
+export const ChannelsProvider = ({ children }) => {
   const [channels, setChannels] = useState(null);
 
   // ==============================
@@ -73,13 +73,15 @@ export function ChannelProvider({ children }) {
 
   return (
     // 実際に出力されるcomponent名は関数名と同じになる
-    <ChannelContext.Provider value={value}>
+    <ChannelsContext.Provider value={value}>
       {/* channels, home, addChannelをchildrenに渡す */}
       {children}
-    </ChannelContext.Provider>
+    </ChannelsContext.Provider>
   );
-}
+};
 
-export function useChannels() {
-  return useContext(ChannelContext);
-}
+export const useChannels = () => {
+  const ctx = useContext(ChannelsContext);
+  if (ctx === undefined) throw new Error("useChannels must be used within <ChannelsProvider>");
+  return ctx;
+};

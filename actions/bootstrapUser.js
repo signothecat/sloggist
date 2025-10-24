@@ -1,7 +1,7 @@
-// lib/server/actions/bootstrapUser.js
-import { prisma } from "@/lib/server/prisma";
-import { ensureHome } from "@/lib/server/services/channels";
-import { getOrCreateUser } from "@/lib/server/services/users";
+// actions/bootstrapUser.js
+import { prisma } from "@/lib/prisma";
+import { ensureHome } from "@/services/channels/ensureHome";
+import { getOrCreateUser } from "@/services/users/getOrCreateUser";
 
 // userが未登録なら作成し、homeもensureし、必ずuserとhomeを返す
 // index.jsのみで呼ばれている

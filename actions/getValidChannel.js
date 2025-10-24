@@ -1,11 +1,11 @@
-// lib/server/actions/bootstrapChannel.js
-import { getOwnedChannel } from "@/lib/server/channel/query";
-import { prisma } from "@/lib/server/prisma";
-import { requireUser } from "@/lib/server/services/users";
-import { HttpError } from "@/lib/shared/errors";
+// actions/getValidChannel.js
+import { HttpError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
+import { getOwnedChannel } from "@/services/channels/getOwnedChannel";
+import { requireUser } from "@/services/users/requireUser";
 
 // slugでchannelを返し、userとchannelを返す
-export async function bootstrapChannel({ token, slug }) {
+export async function getValidChannel({ token, slug }) {
   if (typeof slug !== "string" || !slug) {
     // slugの形式が正しくなければerrorを返す
     throw new HttpError(400, "Invalid slug", {

@@ -1,9 +1,9 @@
-// lib/server/channel/query.js
-import { prisma } from "@/lib/server/prisma";
-import { HttpError } from "@/lib/shared/errors";
+// services/channels/getOwnedChannel.js
+import { HttpError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
 
 // userIdスコープでslugのchannelを探す関数
-// bootstrapChannelで呼ばれる
+// getValidChannelで呼ばれる
 export async function getOwnedChannel({ userId, slug, tx = prisma }) {
   // まずslugでchannelを探す
   const targetChannel = await tx.channel.findUnique({

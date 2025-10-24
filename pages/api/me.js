@@ -1,7 +1,7 @@
 // pages/api/me.js
-import { getTokenCookie } from "@/lib/server/cookies";
-import { getUserFromToken } from "@/lib/server/user/getUserFromToken";
 import { respond } from "@/pages/api/_utils/respond";
+import { getTokenCookie } from "@/services/http/cookies";
+import { getUserFromToken } from "@/services/users/getUserFromToken";
 
 export default async function handler(req, res) {
   await respond(req, res, async () => {
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     console.log("user authenticated");
     return res.status(200).json({
       authenticated: true,
-      user: { username: user.username ?? null, handle: user.handle ?? null } // 安全な情報のみ
+      user: { username: user.username ?? null, handle: user.handle ?? null }, // 安全な情報のみ
     });
   });
 }

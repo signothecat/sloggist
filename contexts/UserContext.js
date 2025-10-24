@@ -1,10 +1,10 @@
-// contexts/user.js
+// contexts/UserContext.js
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-// Context Object = { Provider: <ReactProviderComponent> , ... } を作る
-const UserContext = createContext(null);
+// Context Object = { Provider: <ReactProviderComponent> , Consumer: ... } を作る
+const UserContext = createContext(undefined);
 
-export function UserProvider({ children }) {
+export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const fetchMe = useCallback(async () => {
@@ -13,8 +13,7 @@ export function UserProvider({ children }) {
       window.location.href = "/";
       return;
     }
-    const me = await res.json();
-    // me は { authenticated: boolean, user: { username, handle } | null }
+    const me = await res.json(); // { authenticated: boolean, user: { username, handle } | null }
     setUser(me.user ?? null);
   }, []);
 
@@ -32,8 +31,10 @@ export function UserProvider({ children }) {
       {children}
     </UserContext.Provider>
   );
-}
+};
 
-export function useUser() {
-  return useContext(UserContext);
-}
+export const useUser = () => {
+  const ctx = useContext(UserContext);
+  if (ctx === undefined) throw new Error("useUser must be used within <UserProvider>");
+  return ctx;
+};
