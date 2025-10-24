@@ -8,9 +8,9 @@ export default function ChannelPage() {
 export async function getServerSideProps(ctx) {
   const { req, params } = ctx;
   const [{ getTokenCookie }, { getValidChannel }, { prisma }] = await Promise.all([
-    import("@/lib/server/cookies"),
-    import("@/lib/server/actions/getValidChannel"),
-    import("@/lib/server/prisma"),
+    import("@/services/http/cookies"),
+    import("@/actions/getValidChannel"),
+    import("@/lib/prisma"),
   ]);
 
   // ==============================

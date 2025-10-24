@@ -1,6 +1,6 @@
-// lib/server/channel/query.js
-import { prisma } from "@/lib/server/prisma";
-import { HttpError } from "@/lib/shared/errors";
+// services/channels/getOwnedChannel.js
+import { HttpError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
 
 // userIdスコープでslugのchannelを探す関数
 // getValidChannelで呼ばれる

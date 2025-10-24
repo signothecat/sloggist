@@ -1,9 +1,9 @@
 // pages/api/channels/[slug].js
-import { getValidChannel } from "@/lib/server/actions/getValidChannel";
-import { getTokenCookie } from "@/lib/server/cookies";
-import { prisma } from "@/lib/server/prisma";
-import { HttpError } from "@/lib/shared/errors";
+import { getValidChannel } from "@/actions/getValidChannel";
+import { HttpError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
 import { respond } from "@/pages/api/_utils/respond";
+import { getTokenCookie } from "@/services/http/cookies";
 
 export default async function handler(req, res) {
   await respond(req, res, async () => {

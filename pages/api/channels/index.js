@@ -1,9 +1,9 @@
 // pages/api/channels/index.js
-import { getTokenCookie } from "@/lib/server/cookies";
-import { prisma } from "@/lib/server/prisma";
-import { requireUser } from "@/lib/server/services/users";
-import { HttpError } from "@/lib/shared/errors";
+import { HttpError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
 import { respond } from "@/pages/api/_utils/respond";
+import { getTokenCookie } from "@/services/http/cookies";
+import { requireUser } from "@/services/users/requireUser";
 
 export const SAFE_CHANNEL_SELECT = {
   userId: true,

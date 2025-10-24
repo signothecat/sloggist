@@ -1,8 +1,8 @@
-// lib/server/actions/getValidChannel.js
-import { getOwnedChannel } from "@/lib/server/channel/query";
-import { prisma } from "@/lib/server/prisma";
-import { requireUser } from "@/lib/server/services/users";
-import { HttpError } from "@/lib/shared/errors";
+// actions/getValidChannel.js
+import { HttpError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
+import { getOwnedChannel } from "@/services/channels/getOwnedChannel";
+import { requireUser } from "@/services/users/requireUser";
 
 // slugでchannelを返し、userとchannelを返す
 export async function getValidChannel({ token, slug }) {

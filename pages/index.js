@@ -2,8 +2,8 @@
 
 export async function getServerSideProps({ req, res }) {
   const [{ bootstrapUser }, { getTokenCookie, setTokenCookie }] = await Promise.all([
-    import("@/lib/server/actions/bootstrapUser"),
-    import("@/lib/server/cookies"),
+    import("@/actions/bootstrapUser"),
+    import("@/services/http/cookies"),
   ]);
 
   // Cookieにtokenなし / token: 非文字列 / token: "undefined" などの場合、nullにする

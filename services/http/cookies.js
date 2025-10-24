@@ -1,4 +1,4 @@
-// lib/server/cookies.js
+// services/http/cookies.js
 import * as cookie from "cookie";
 
 /* Cookie名 */
