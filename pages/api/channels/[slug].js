@@ -1,5 +1,5 @@
 // pages/api/channels/[slug].js
-import { bootstrapChannel } from "@/lib/server/actions/bootstrapChannel";
+import { getValidChannel } from "@/lib/server/actions/getValidChannel";
 import { getTokenCookie } from "@/lib/server/cookies";
 import { prisma } from "@/lib/server/prisma";
 import { HttpError } from "@/lib/shared/errors";
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     const slug = typeof rawSlug === "string" ? rawSlug : rawSlug?.[0];
 
     if (req.method === "DELETE") {
-      const { channel } = await bootstrapChannel({ token, slug });
+      const { channel } = await getValidChannel({ token, slug });
 
       // homeなら却下
       if (channel.isHome) {

@@ -7,9 +7,9 @@ export default function ChannelPage() {
 
 export async function getServerSideProps(ctx) {
   const { req, params } = ctx;
-  const [{ getTokenCookie }, { bootstrapChannel }, { prisma }] = await Promise.all([
+  const [{ getTokenCookie }, { getValidChannel }, { prisma }] = await Promise.all([
     import("@/lib/server/cookies"),
-    import("@/lib/server/actions/bootstrapChannel"),
+    import("@/lib/server/actions/getValidChannel"),
     import("@/lib/server/prisma"),
   ]);
 
@@ -28,7 +28,7 @@ export async function getServerSideProps(ctx) {
   const slug = typeof params?.slug === "string" ? params.slug : params?.slug?.[0];
 
   try {
-    await bootstrapChannel({ token, slug }); // user,channelが返るか、400/401/404が返る
+    await getValidChannel({ token, slug }); // user,channelが返るか、400/401/404が返る
     return { props: {} }; // エラーでなければそのまま表示
   } catch (e) {
     const status = e?.status ?? 500;

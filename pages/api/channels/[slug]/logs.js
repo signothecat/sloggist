@@ -1,5 +1,5 @@
 // pages/api/channels/[slug]/logs.js
-import { bootstrapChannel } from "@/lib/server/actions/bootstrapChannel";
+import { getValidChannel } from "@/lib/server/actions/getValidChannel";
 import { getTokenCookie } from "@/lib/server/cookies";
 import { prisma } from "@/lib/server/prisma";
 import { HttpError } from "@/lib/shared/errors";
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     const rawSlug = req.query?.slug; // router.queryからslugを取り出す
     const slug = typeof rawSlug === "string" ? rawSlug : rawSlug?.[0]; // slugに入れる（rawSlugが配列なら最初の項目を取得）
 
-    const { user, channel } = await bootstrapChannel({ token, slug }); // user,channelが返るか、400/401/404が返る
+    const { user, channel } = await getValidChannel({ token, slug }); // user,channelが返るか、400/401/404が返る
 
     if (req.method === "GET") {
       const logs = await prisma.log.findMany({

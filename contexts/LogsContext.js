@@ -44,7 +44,7 @@ export const LogsProvider = ({ children }) => {
     try {
       const res = await fetch(`/api/channels/${targetSlug}/logs`, { cache: "no-store" });
       if (res.status === 401 || res.status === 404) {
-        // bootstrapChannel > requireUserで401 / getOwnedChannelで404
+        // getValidChannel > requireUserで401 / getOwnedChannelで404
         window.location.href = "/";
         return;
       }
