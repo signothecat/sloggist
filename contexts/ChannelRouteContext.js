@@ -1,10 +1,11 @@
-// contexts/channelRoute.js
+// contexts/ChannelRouteContext.js
 import { useRouter } from "next/router";
 import { createContext, useCallback, useContext, useMemo } from "react";
 
-const ChannelRouteContext = createContext(null);
+// Context Object = { Provider: <ReactProviderComponent> , Consumer: ... } を作る
+const ChannelRouteContext = createContext(undefined);
 
-export function ChannelRouteProvider({ children }) {
+export const ChannelRouteProvider = ({ children }) => {
   const router = useRouter();
   const rawSlug = router.query.slug;
   const currentSlug = typeof rawSlug === "string" ? rawSlug : rawSlug?.[0] || null;
@@ -19,8 +20,10 @@ export function ChannelRouteProvider({ children }) {
 
   const value = useMemo(() => ({ currentSlug, selectChannel }), [currentSlug, selectChannel]);
   return <ChannelRouteContext.Provider value={value}>{children}</ChannelRouteContext.Provider>;
-}
+};
 
-export function useChannelRoute() {
-  return useContext(ChannelRouteContext);
-}
+export const useChannelRoute = () => {
+  const ctx = useContext(ChannelRouteContext);
+  if (ctx === undefined) throw new Error("useChannelRoute must be used within <ChannelRouteProvider>");
+  return ctx;
+};

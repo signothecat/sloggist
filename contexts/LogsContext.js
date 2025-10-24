@@ -1,10 +1,10 @@
-// contexts/logs.js
+// contexts/LogsContext.js
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
-// Context Object = { Provider: <ReactProviderComponent> , ... } を作る
-const LogContext = createContext(null);
+// Context Object = { Provider: <ReactProviderComponent> , Consumer: ... } を作る
+const LogsContext = createContext(undefined);
 
-export function LogProvider({ children }) {
+export const LogsProvider = ({ children }) => {
   // resourceCache[slug].status
   // - "unselected" : slugなし（＝チャンネル未選択）
   // - "idle"       : slug選択済みだが、まだfetchLogsOfを呼んでいない
@@ -169,13 +169,15 @@ export function LogProvider({ children }) {
 
   return (
     // 実際に出力されるcomponent名は関数名と同じになる
-    <LogContext.Provider value={value}>
+    <LogsContext.Provider value={value}>
       {/* view, fetchLogsOf, sendLogをchildrenに渡す */}
       {children}
-    </LogContext.Provider>
+    </LogsContext.Provider>
   );
-}
+};
 
-export function useLogs() {
-  return useContext(LogContext);
-}
+export const useLogs = () => {
+  const ctx = useContext(LogsContext);
+  if (ctx === undefined) throw new Error("useLogs must be used within <LogsProvider>");
+  return ctx;
+};
