@@ -5,7 +5,7 @@ import { getOrCreateUser } from "@/services/users/getOrCreateUser";
 
 // userが未登録なら作成し、homeもensureし、必ずuserとhomeを返す
 // index.jsのみで呼ばれている
-export async function bootstrapUser({ token }) {
+export const bootstrapUser = async ({ token }) => {
   return prisma.$transaction(async tx => {
     const { user, created: userCreated } = await getOrCreateUser({ token, tx });
 
@@ -19,4 +19,4 @@ export async function bootstrapUser({ token }) {
       created: { user: userCreated, home: true }, // TBF: homeをcreateしなくてもtrueになる可能性があるのでhomeCreatedで受けるようにしたい
     };
   });
-}
+};

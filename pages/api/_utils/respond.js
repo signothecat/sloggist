@@ -2,8 +2,9 @@
 // apiでのみ使う
 import { randomUUID } from "node:crypto";
 
-export async function respond(req, res, handler) {
+export const respond = async (req, res, handler) => {
   const reqId = randomUUID(); // 相関ID
+
   try {
     await handler(); // APIの本体
   } catch (err) {
@@ -27,4 +28,4 @@ export async function respond(req, res, handler) {
     res.setHeader("X-Request-ID", reqId);
     return res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};

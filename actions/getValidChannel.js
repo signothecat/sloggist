@@ -5,7 +5,7 @@ import { getOwnedChannel } from "@/services/channels/getOwnedChannel";
 import { requireUser } from "@/services/users/requireUser";
 
 // slugでchannelを返し、userとchannelを返す
-export async function getValidChannel({ token, slug }) {
+export const getValidChannel = async ({ token, slug }) => {
   if (typeof slug !== "string" || !slug) {
     // slugの形式が正しくなければerrorを返す
     throw new HttpError(400, "Invalid slug", {
@@ -17,4 +17,4 @@ export async function getValidChannel({ token, slug }) {
     const channel = await getOwnedChannel({ userId: user.id, slug, tx }); // channelが見つからなければ404
     return { user, channel }; // TBF: これuserからidを抜かないといけない
   });
-}
+};

@@ -9,7 +9,7 @@ export const SERVER_USER_SELECT = {
   handle: true,
 };
 
-export async function getUserFromToken({ token, tx = prisma }) {
+export const getUserFromToken = async ({ token, tx = prisma }) => {
   if (!token || token === "undefined" || token === "null") {
     return null;
   }
@@ -18,4 +18,4 @@ export async function getUserFromToken({ token, tx = prisma }) {
     where: { token },
     select: SERVER_USER_SELECT,
   });
-}
+};

@@ -5,7 +5,7 @@ export default function ChannelPage() {
   return <ChannelPane />;
 }
 
-export async function getServerSideProps(ctx) {
+export const getServerSideProps = async ctx => {
   const { req, params } = ctx;
   const [{ getTokenCookie }, { getValidChannel }, { prisma }] = await Promise.all([
     import("@/services/http/cookies"),
@@ -54,4 +54,4 @@ export async function getServerSideProps(ctx) {
     // その他は一旦トップへ
     return { redirect: { destination: "/", permanent: false } };
   }
-}
+};

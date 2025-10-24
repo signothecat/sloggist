@@ -4,7 +4,7 @@ import { getUserFromToken } from "@/services/users/getUserFromToken";
 
 // userを探して返すが、見つからなければ作成して返す、userの存在を保証する。副作用あり
 // bootstrapUserでのみ呼ばれている（index.jsでのみ呼ばれている）
-export async function getOrCreateUser({ token, tx = prisma }) {
+export const getOrCreateUser = async ({ token, tx = prisma }) => {
   const found = await getUserFromToken({ token, tx });
   if (found) return { user: found, created: false };
 
@@ -15,4 +15,4 @@ export async function getOrCreateUser({ token, tx = prisma }) {
   });
 
   return { user, created: true };
-}
+};
