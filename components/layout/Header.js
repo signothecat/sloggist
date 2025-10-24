@@ -1,6 +1,6 @@
 // components/layout/Header.js
-import { useChannelRoute } from "@/contexts/channelRoute";
-import { useChannels } from "@/contexts/channels";
+import { useChannelRoute } from "@/contexts/ChannelRouteContext";
+import { useChannels } from "@/contexts/ChannelsContext";
 import styles from "@/styles/layout.module.css";
 
 export default function Header() {

@@ -1,7 +1,7 @@
 // components/layout/Bottom.js
-import { useChannelRoute } from "@/contexts/channelRoute";
-import { useChannels } from "@/contexts/channels";
-import { useLogs } from "@/contexts/logs";
+import { useChannelRoute } from "@/contexts/ChannelRouteContext";
+import { useChannels } from "@/contexts/ChannelsContext";
+import { useLogs } from "@/contexts/LogsContext";
 import styles from "@/styles/layout.module.css";
 import { SendHorizontal } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
