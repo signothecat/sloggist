@@ -23,7 +23,10 @@
   padding: 18px 18px;
   line-height: 1.4;
   background-color: transparent;
-  /* transition: background 0.2s; */
+  /* 文字列の表示関連 */
+  white-space: pre-wrap; /* 改行・空白文字を保持 */
+  overflow-wrap: anywhere; /* 長くて収まらない場合に折り返し */
+
 }
 .logContainer + .logContainer {          /* 直前(下)にlogContainerを持つlogContainer */
   border-top: 0.5px solid #e6e8eb;  /* 上線 */
