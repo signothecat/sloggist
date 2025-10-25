@@ -14,8 +14,6 @@ Demo available here! :point_right: [Vercel](https://sloggist.vercel.app/)
 今後、以下のような修正・機能追加を予定しています。
 
 ### リファクタリング
-- [x] ディレクトリ構成を改善する（services/とactions/を追加）
-- [ ] よく使う機能をlibに切り出す
 
 ### 機能改善・追加
 - [ ] チャンネル名の変更機能を実装する
