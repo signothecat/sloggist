@@ -4,8 +4,7 @@ import { prisma } from "@/lib/prisma";
 const homeSelect = { id: true, slug: true, name: true, isHome: true };
 
 // userのHomeチャンネルを返す関数
-// bootstrapUserでのみ呼ばれている（index.jsでのみ呼ばれる）
-// ensureUserしたあとに呼ばれる前提
+// bootstrapUserでのみ（index.jsでのみ）呼ばれており、ensureUser後に呼ばれる前提
 export async function ensureHome({ userId, tx = prisma, homeName }) {
   // userIdとnameでHomeチャンネルをupsert
   const home = await tx.channel.upsert({

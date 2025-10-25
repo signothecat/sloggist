@@ -7,6 +7,7 @@ export const SERVER_USER_SELECT = {
   token: true,
   username: true,
   handle: true,
+  avatar: true,
 };
 
 export const getUserFromToken = async ({ token, tx = prisma }) => {

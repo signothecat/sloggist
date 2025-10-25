@@ -7,46 +7,37 @@ export default function ChannelPage() {
 
 export const getServerSideProps = async ctx => {
   const { req, params } = ctx;
-  const [{ getTokenCookie }, { getValidChannel }, { prisma }] = await Promise.all([
+  const [{ getTokenCookie }, { getValidChannel }, { getHomeSlug }] = await Promise.all([
     import("@/services/http/cookies"),
     import("@/actions/getValidChannel"),
-    import("@/lib/prisma"),
+    import("@/services/users/getHomeSlug"),
   ]);
 
-  // ==============================
-  // Cookieのuser_token確認
-  // ==============================
+  // === auth ===
 
   const token = getTokenCookie(req) ?? null;
-  // tokenがなければトップへ
-  if (!token) return { redirect: { destination: "/", permanent: false } };
+  if (!token) return { redirect: { destination: "/", permanent: false } }; // tokenがなければトップへ
 
-  // ==============================
-  // URL(slug)検証
-  // ==============================
+  // === slug verification ===
 
   const slug = typeof params?.slug === "string" ? params.slug : params?.slug?.[0];
 
   try {
-    await getValidChannel({ token, slug }); // user,channelが返るか、400/401/404が返る
-    return { props: {} }; // エラーでなければそのまま表示
+    await getValidChannel({ token, slug }); //  401 | 400 | 404
+
+    // エラーでなければそのまま表示
+    return { props: {} };
   } catch (e) {
     const status = e?.status ?? 500;
 
     // 401(認証切れ)はトップへ
-    if (status === 401) return { redirect: { destination: "/", permanent: false } };
+    if (status === 401) {
+      return { redirect: { destination: "/", permanent: false } };
+    }
 
     // 400と404はHomeチャンネルへ
-    // (400: Invalid slug, 404: Channel not found もしくは Channel forbidden)
     if (status === 400 || status === 404) {
-      // userのHomeを引いてslugを得る（ensure済みのはずだが念のため）
-      const user = await prisma.user.findUnique({
-        where: { token },
-        select: { id: true, home: { select: { slug: true } } },
-      });
-      const homeSlug =
-        user?.home?.slug ?? (await prisma.channel.findFirst({ where: { userId: user?.id, isHome: true }, select: { slug: true } }))?.slug ?? ""; // 最後の保険
-
+      const homeSlug = await getHomeSlug({ token });
       const dest = homeSlug ? `/channel/${homeSlug}` : "/";
       return { redirect: { destination: dest, permanent: false } };
     }
