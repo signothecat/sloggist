@@ -21,6 +21,7 @@ model User {
   token     String   @unique @default(uuid()) @db.Uuid  // Cookieに入れるユーザー識別用のトークン
   username  String?  @unique                            // いわゆるユーザーID
   handle    String?                                     // 表示名
+  avatar    Json?                             @db.JsonB // ユーザーアイコン情報
   homeId    String?  @unique                  @db.Uuid  // UserにつきHomeチャンネルは一つ
   createdAt DateTime         @default(now())  @db.Timestamptz(6)
 

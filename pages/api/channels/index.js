@@ -1,70 +1,30 @@
 // pages/api/channels/index.js
 import { HttpError } from "@/lib/errors";
-import { prisma } from "@/lib/prisma";
 import { respond } from "@/pages/api/_utils/respond";
+import { createChannel } from "@/services/channels/createChannel";
+import { getChannelsByUser } from "@/services/channels/getChannelsByUser";
 import { getTokenCookie } from "@/services/http/cookies";
 import { requireUser } from "@/services/users/requireUser";
-
-export const SAFE_CHANNEL_SELECT = {
-  userId: true,
-  name: true,
-  slug: true,
-  isHome: true,
-};
 
 export default async function handler(req, res) {
   await respond(req, res, async () => {
     const token = getTokenCookie(req) ?? null;
-    const user = await requireUser({ token }); // tokenでuserが解決しなければ401
+    const user = await requireUser({ token }); // user|401
 
     if (req.method === "GET") {
-      const channels = await prisma.channel.findMany({
-        where: { userId: user.id },
-        select: SAFE_CHANNEL_SELECT,
-        orderBy: { createdAt: "asc" },
-      });
-      return res.status(200).json(channels);
+      const channels = await getChannelsByUser({ userId: user.id }); // channels|400|500
+      return channels;
     }
 
     if (req.method === "POST") {
-      const maxNameLength = 40;
-      const rawName = req.body?.name;
-      const newName = typeof rawName === "string" ? rawName.trim() : "";
-
-      if (!newName)
-        throw new HttpError(400, "Name is required", {
-          code: "CHANNEL_NAME_REQUIRED",
-        });
-      if (newName.length > maxNameLength) {
-        throw new HttpError(400, "Name cannot exceed 40 characters.", {
-          code: "CHANNEL_NAME_TOO_LONG",
-          meta: { len: newName.length },
-        });
-      }
-
-      try {
-        const channel = await prisma.channel.create({
-          data: { name: newName, userId: user.id },
-          select: SAFE_CHANNEL_SELECT,
-        });
-        return res.status(201).json(channel);
-      } catch (e) {
-        // Prisma unique 衝突
-        if (e?.code === "P2002") {
-          throw new HttpError(409, "Channel already exists", {
-            code: "CHANNEL_NAME_CONFLICT",
-            meta: { username: user.username, channelName: newName },
-          });
-        }
-        throw e; // それ以外は500 系でrespond()が処理
-      }
+      const channel = await createChannel({ userId: user.id, rawName: req.body?.name }); // channel|400|409|500
+      return res.status(201).json(channel);
     }
 
-    // Not allowed
     res.setHeader("Allow", ["GET", "POST"]);
-    throw new HttpError(405, "Method Not Allowed", {
+    throw new HttpError(405, "Something went wrong", {
       code: "METHOD_NOT_ALLOWED",
-      meta: { method: req.method },
+      internalMessage: `channels API called with unsupported method: ${req.method}`,
     });
   });
 }

@@ -12,12 +12,26 @@ export const ChannelsProvider = ({ children }) => {
   // ==============================
 
   const fetchChannels = useCallback(async () => {
-    const res = await fetch("/api/channels", { cache: "no-store" });
-    if (res.status === 401 || res.status === 404) {
-      window.location.href = "/";
-      return;
+    try {
+      const res = await fetch("/api/channels", { cache: "no-store" });
+      // 401(認証切れ)はトップへ
+      if (res.status === 401) {
+        window.location.href = "/";
+        return;
+      }
+
+      // 400/405/500等は空配列を返す
+      if (!res.ok) {
+        setChannels([]);
+        return;
+      }
+
+      const result = await res.json().catch(() => null);
+      setChannels(Array.isArray(result) ? result : []);
+    } catch (e) {
+      // ネットワークエラーなど
+      setChannels([]);
     }
-    setChannels(await res.json());
   }, []);
 
   const addChannel = useCallback(async newName => {

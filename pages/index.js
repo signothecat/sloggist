@@ -1,6 +1,6 @@
 // pages/index.js
 
-export async function getServerSideProps({ req, res }) {
+export const getServerSideProps = async ({ req, res }) => {
   const [{ bootstrapUser }, { getTokenCookie, setTokenCookie }] = await Promise.all([
     import("@/actions/bootstrapUser"),
     import("@/services/http/cookies"),
@@ -20,7 +20,7 @@ export async function getServerSideProps({ req, res }) {
   return {
     redirect: { destination: `/channel/${homeSlug}`, permanent: false },
   };
-}
+};
 
 export default function _() {
   return null;

@@ -16,23 +16,23 @@ const tokenCookieOptions = {
 
 /* Cookieを取得 */
 // token
-export function getTokenCookie(req) {
+export const getTokenCookie = req => {
   const parsed = cookie.parse(req?.headers?.cookie ?? "");
   return parsed[tokenName] ?? null;
-}
+};
 
 /* Cookieをセット */
 // token
-export function setTokenCookie(res, token, overrideOptions = {}) {
+export const setTokenCookie = (res, token, overrideOptions = {}) => {
   const serialized = cookie.serialize(tokenName, token, {
     ...tokenCookieOptions,
     ...overrideOptions,
   });
   res.setHeader("Set-Cookie", serialized);
-}
+};
 
 /* Cookieを削除 */
 // token
-export function clearTokenCookie(res) {
+export const clearTokenCookie = res => {
   setTokenCookie(res, "", { maxAge: 0 });
-}
+};
